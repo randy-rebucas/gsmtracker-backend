@@ -20,9 +20,9 @@ const options = {
 };
 
 mongoose.connect(
-    'mongodb+srv://randyr:' +
+    'mongodb+srv://myclinicsoft:' +
     process.env.MONGO_ATLAS_PW +
-    '@main-1htay.mongodb.net/cutsonwheel?retryWrites=true&w=majority',
+    '@main-cndu1.mongodb.net/myclinicsoft?retryWrites=true&w=majority',
     options
 )
   .then((connecting) => {

@@ -94,10 +94,7 @@ exports.create = async(req, res, next) => {
             age: req.body.age,
             birthdate: req.body.birthdate,
             status: req.body.status,
-            contact: req.body.contact,
-            sss: req.body.sss,
-            tin: req.body.tin,
-            philhealth: req.body.philhealth,
+            contact: req.body.contact
         });
         addressData = req.body.address;
         for (let index = 0; index < addressData.length; index++) {
@@ -151,9 +148,6 @@ exports.update = async(req, res, next) => {
             birthdate: req.body.birthdate,
             status: req.body.status,
             contact: req.body.contact,
-            sss: req.body.sss,
-            tin: req.body.tin,
-            philhealth: req.body.philhealth,
             classification: req.body.classification
         });
         addressData = req.body.address;
@@ -227,44 +221,6 @@ exports.upload = async(req, res, next) => {
         });
     }
 };
-
-exports.updateClassification = async(req, res, next) => {
-    try {
-
-        let selectedClassification = await User.updateOne({
-            _id: req.params.userId
-        }, { $set: { 'classification': req.body.classification } });
-        if (!selectedClassification) {
-            throw new Error('Error in updating user!');
-        }
-
-        res.status(200).json({
-            classification: selectedClassification.classification,
-            message: 'Profile classification updated!'
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
-}
-
-exports.getClassifiedUser = async(req, res, next) => {
-    try {
-        let classifiedUsers = await User.find({ classification: req.params.classificationId }).select('firstname lastname avatar').exec();
-
-        res.status(200).json({
-            classifiedUsers: classifiedUsers,
-            count: classifiedUsers.length
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
-}
 
 exports.getTodaysBirthday = async(req, res, next) => {
     try {

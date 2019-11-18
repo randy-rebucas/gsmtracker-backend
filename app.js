@@ -11,7 +11,6 @@ var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 var userRouter = require('./routes/users');
 var uploadRouter = require('./routes/upload');
-var classificationRouter = require('./routes/classification');
 var paymentRouter = require('./routes/payment');
 
 require('./db/index');
@@ -45,7 +44,6 @@ app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/upload', uploadRouter);
-app.use('/api/classification', classificationRouter);
 app.use('/api/payment', paymentRouter);
 
 // catch 404 and forward to error handler
