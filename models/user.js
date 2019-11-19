@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+const mongoose = require('./../db/index');
 
 const userSchema = mongoose.Schema({
     avatar: { type: String },
@@ -10,10 +11,6 @@ const userSchema = mongoose.Schema({
     birthdate: { type: Date, default: null },
     status: { type: String, default: null },
     contact: { type: String, default: null },
-    classification: { type: mongoose.Schema.Types.ObjectId, ref: 'Classifications' },
-    sss: { type: String, default: null },
-    tin: { type: String, default: null },
-    philhealth: { type: String, default: null },
     address: [{
         address1: { type: String }, // street address
         address2: { type: String }, // street address line 2
@@ -21,8 +18,7 @@ const userSchema = mongoose.Schema({
         province: { type: String },
         postalCode: { type: Number },
         country: { type: String }
-    }],
-    activated: { type: Boolean, default: false }
+    }]
 }, { timestamps: {} });
 
 userSchema.virtual('fullName').get(() => {

@@ -10,12 +10,12 @@ var cors = require('cors');
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 var userRouter = require('./routes/users');
-var uploadRouter = require('./routes/upload');
-var paymentRouter = require('./routes/payment');
-
-require('./db/index');
 
 var app = express();
+
+app.use('/', indexRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
 
 var corsOptions = {
     origin: '*',
@@ -38,13 +38,6 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '4MB' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/files', express.static(path.join(__dirname, 'files')));
-
-
-app.use('/', indexRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/user', userRouter);
-app.use('/api/upload', uploadRouter);
-app.use('/api/payment', paymentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
