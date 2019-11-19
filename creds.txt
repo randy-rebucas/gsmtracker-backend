@@ -76,3 +76,7 @@ redirect to customer profile
 	
 	==========
 Hybrid blockchain
+
+hmac hashes
+
+Roles
