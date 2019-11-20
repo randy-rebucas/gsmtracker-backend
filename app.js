@@ -13,9 +13,7 @@ var userRouter = require('./routes/users');
 
 var app = express();
 
-app.use('/', indexRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/user', userRouter);
+
 
 var corsOptions = {
     origin: '*',
@@ -38,6 +36,10 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '4MB' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/files', express.static(path.join(__dirname, 'files')));
+
+app.use('/', indexRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
