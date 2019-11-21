@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  #container
+    ul
+        each chain in chains
+            li=chain.data
+
+    form(name="add-estimation", method="post", action="/api/blockchain")
+        div.input
+            span.label Title
+            input(type="text", name="title")
+        div.actions
+            input(type="submit", value="add")

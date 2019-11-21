@@ -8,6 +8,7 @@ var helmet = require('helmet');
 var cors = require('cors');
 
 var indexRouter = require('./routes/index');
+var blockchainRouter = require('./routes/blockchain');
 var authRouter = require('./routes/auth');
 var userRouter = require('./routes/users');
 
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/files', express.static(path.join(__dirname, 'files')));
 
 app.use('/', indexRouter);
+app.use('/api/blockchain', blockchainRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 
