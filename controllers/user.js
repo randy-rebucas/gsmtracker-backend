@@ -1,13 +1,14 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-// const sharp = require('sharp');
-// const moment = require('moment');
-const slugify = require('slugify');
 
 const ObjectId = require('mongoose').Types.ObjectId;
 
 const Auth = require('../models/auth');
 const User = require('../models/user');
+
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
+
+const myKey = ec.genKeyPair();
 
 exports.getAll = async(req, res, next) => {
     try {
@@ -87,6 +88,8 @@ exports.create = async(req, res, next) => {
          * Set common entities on people collection
          */
         const newUser = new User({
+            pubkey: myKey.getPublic('hex'),
+            prikey: myKey.getPrivate('hex'),
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             midlename: req.body.midlename,
@@ -168,91 +171,3 @@ exports.update = async(req, res, next) => {
     }
 
 };
-
-exports.search = async(req, res, next) => {
-    try {
-
-        let userType = await Type.findOne({ slug: 'patients' }).exec();
-        let myUsers = await MyUser.find()
-            .populate({
-                path: 'userId',
-                populate: {
-                    path: 'personId',
-                    model: Person
-                }
-            }).where('userType', userType._id);
-
-        const result = [];
-        myUsers.forEach(element => {
-            result.push({ id: element._id, name: element.userId.personId.firstname + ', ' + element.userId.personId.lastname });
-        });
-
-        let count = await MyUser.countDocuments({ 'userType': userType._id });
-
-        res.status(200).json({
-            total: count,
-            results: result
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
-}
-
-exports.upload = async(req, res, next) => {
-    try {
-        const url = req.protocol + '://' + req.get('host');
-        let selectedAvatar = await User.findOneAndUpdate({
-            _id: req.params.userId
-        }, { $set: { 'avatar': url + '/files/' + req.file.filename } }, { new: true });
-        if (!selectedAvatar) {
-            throw new Error('Error in updating user!');
-        }
-
-        res.status(200).json({
-            avatar: selectedAvatar.avatar,
-            message: 'Profile picture updated!'
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
-};
-
-exports.getTodaysBirthday = async(req, res, next) => {
-    try {
-        const birthdays = await MyUser.aggregate([{
-                $lookup: {
-                    from: 'auths', // other table name
-                    localField: 'userId', // name of users table field
-                    foreignField: 'userId', // name of userinfo table field
-                    as: 'auths' // alias for userinfo table
-                }
-            },
-            {
-                $redact: {
-                    $cond: [{
-                            $eq: [
-                                { $month: "$user.birthdate" },
-                                { $month: new Date() }
-                            ]
-                        },
-                        "$$KEEP",
-                        "$$PRUNE"
-                    ]
-                }
-            }
-        ]);
-        res.status(200).json({
-            users: birthdays
-        });
-
-    } catch (e) {
-        res.status(500).json({
-            message: e.message
-        });
-    }
-}

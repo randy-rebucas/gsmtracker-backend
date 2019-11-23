@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 
 const Blockchain = require('../models/blockchain');
+const myChain = require('../helper/blockchain');
 
 exports.getChain = async(req, res, next) => {
     try {

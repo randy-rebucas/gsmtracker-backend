@@ -9,7 +9,7 @@ const authSchema = mongoose.Schema({
         lowercase: true
     },
     password: { type: String, required: true },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true }
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 
-module.exports = mongoose.model('Auths', authSchema);
+module.exports = mongoose.model('Auth', authSchema);

@@ -11,10 +11,11 @@ var indexRouter = require('./routes/index');
 var blockchainRouter = require('./routes/blockchain');
 var authRouter = require('./routes/auth');
 var userRouter = require('./routes/users');
+var appointmentRouter = require('./routes/appointment');
+var messageRouter = require('./routes/message');
+var settingRouter = require('./routes/setting');
 
 var app = express();
-
-
 
 var corsOptions = {
     origin: '*',
@@ -42,6 +43,10 @@ app.use('/', indexRouter);
 app.use('/api/blockchain', blockchainRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use('/api/appointments', appointmentRouter);
+app.use('/api/messages', messageRouter);
+app.use('/api/setting', settingRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

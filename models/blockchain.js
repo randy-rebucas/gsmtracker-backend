@@ -1,11 +1,11 @@
 // const mongoose = require('mongoose');
 const mongoose = require('./../db/index');
 
-const blockSchema = mongoose.Schema({
-    timestamp: { type: String, required: true },
-    previousHash: { type: String, required: true },
-    data: [mongoose.Schema.Types.Mixed],
+const blockchainSchema = mongoose.Schema({
+    timestamp: { type: Date, required: true, default: Date.now },
+    transactions: { type: Array, required: true },
+    previousHash: { type: String, required: false },
     hash: { type: String, required: true }
 }, { strict: false });
 
-module.exports = mongoose.model('blocks', blockSchema);
+module.exports = mongoose.model('Blockchain', blockchainSchema);

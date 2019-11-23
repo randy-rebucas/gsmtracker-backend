@@ -2,12 +2,12 @@
 const mongoose = require('./../db/index');
 
 const userSchema = mongoose.Schema({
-    avatar: { type: String },
+    pubkey: { type: String, require: true },
+    prikey: { type: String, require: true },
     firstname: { type: String, required: true },
     midlename: { type: String, default: null },
     lastname: { type: String, required: true },
     gender: { type: String, default: null },
-    age: { type: String, default: null },
     birthdate: { type: Date, default: null },
     status: { type: String, default: null },
     contact: { type: String, default: null },
@@ -18,7 +18,8 @@ const userSchema = mongoose.Schema({
         province: { type: String },
         postalCode: { type: Number },
         country: { type: String }
-    }]
+    }],
+    avatar: { type: String }
 }, { timestamps: {} });
 
 userSchema.virtual('fullName').get(() => {
@@ -32,4 +33,15 @@ userSchema.virtual('fullName').set((name) => {
     this.lastname = str[1]
 })
 
-module.exports = mongoose.model('Users', userSchema);
+userSchema.virtual('age').get(() => {
+    const today = new Date();
+    const bDate = new Date(this.birthdate);
+    let age = today.getFullYear() - bDate.getFullYear();
+    const m = today.getMonth() - bDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+        age--;
+    }
+    return age;
+})
+
+module.exports = mongoose.model('User', userSchema);

@@ -8,6 +8,11 @@ const nodeMailer = require('nodemailer');
 var _jade = require('jade');
 var fs = require('fs');
 
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
+
+const myKey = ec.genKeyPair();
+
 exports.register = async(req, res, next) => {
     try {
 
@@ -23,6 +28,8 @@ exports.register = async(req, res, next) => {
          * Set extended entities from poeple to users collection
          */
         const newUser = new User({
+            pubkey: myKey.getPublic('hex'),
+            prikey: myKey.getPrivate('hex'),
             firstname: req.body.firstname,
             lastname: req.body.lastname
         });
