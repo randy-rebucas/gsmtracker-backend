@@ -15,6 +15,8 @@ var appointmentRouter = require('./routes/appointment');
 var messageRouter = require('./routes/message');
 var settingRouter = require('./routes/setting');
 
+var uploadRouter = require('./routes/upload');
+
 var app = express();
 
 var corsOptions = {
@@ -47,6 +49,7 @@ app.use('/api/appointments', appointmentRouter);
 app.use('/api/messages', messageRouter);
 app.use('/api/setting', settingRouter);
 
+app.use('/api/upload', uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

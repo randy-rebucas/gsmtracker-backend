@@ -1,9 +1,8 @@
 const mongoose = require('./../db/index');
 
 const uploadSchema = mongoose.Schema({
-    userId: { type: String, require: true },
-    name: { type: String },
-    image: Buffer,
+    sourceId: { type: String, require: true },
+    image: String,
 });
 
 
