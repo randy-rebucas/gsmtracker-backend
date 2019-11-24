@@ -2,8 +2,8 @@
 const mongoose = require('./../db/index');
 
 const userSchema = mongoose.Schema({
-    pubkey: { type: String, require: true },
-    prikey: { type: String, require: true },
+    publicKey: { type: String, require: true },
+    privateKey: { type: String, require: true },
     firstname: { type: String, required: true },
     midlename: { type: String, default: null },
     lastname: { type: String, required: true },
@@ -19,7 +19,13 @@ const userSchema = mongoose.Schema({
         postalCode: { type: Number },
         country: { type: String }
     }],
-    avatar: { type: String }
+    avatar: { type: String },
+    usertypes: [{
+        type: { type: mongoose.Schema.Types.ObjectId, ref: 'Type', required: true }
+    }],
+    physicians: [{
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    }]
 }, { timestamps: {} });
 
 userSchema.virtual('fullName').get(() => {

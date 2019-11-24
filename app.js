@@ -16,6 +16,7 @@ var messageRouter = require('./routes/message');
 var settingRouter = require('./routes/setting');
 
 var uploadRouter = require('./routes/upload');
+var typeRouter = require('./routes/type');
 
 var app = express();
 
@@ -50,6 +51,7 @@ app.use('/api/messages', messageRouter);
 app.use('/api/setting', settingRouter);
 
 app.use('/api/upload', uploadRouter);
+app.use('/api/type', typeRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

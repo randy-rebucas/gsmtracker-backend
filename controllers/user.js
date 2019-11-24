@@ -12,16 +12,16 @@ const myKey = ec.genKeyPair();
 
 exports.getAll = async(req, res, next) => {
     try {
+
         const pageSize = +req.query.pagesize;
         const currentPage = +req.query.page;
-        const query = User.find();
+        const query = User.find({ 'usertypes.type': req.query.usertype });
         if (pageSize && currentPage) {
             query.skip(pageSize * (currentPage - 1)).limit(pageSize);
         }
         let users = await query.exec();
         let userCount = await User.countDocuments();
 
-        // console.log(users);
         res.status(200).json({
             message: 'Users fetched successfully!',
             users: users,

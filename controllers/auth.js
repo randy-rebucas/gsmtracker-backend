@@ -1,16 +1,17 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const slugify = require('slugify');
+const nodeMailer = require('nodemailer');
+
 const Auth = require('../models/auth');
 const User = require('../models/user');
-
-const nodeMailer = require('nodemailer');
+const Type = require('../models/type');
 
 var _jade = require('jade');
 var fs = require('fs');
 
 const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
-
 const myKey = ec.genKeyPair();
 
 exports.register = async(req, res, next) => {
@@ -25,13 +26,34 @@ exports.register = async(req, res, next) => {
         }
 
         /**
+         * Set physicians doc in type collection
+         */
+        const newType = new Type({
+            name: 'Physicians',
+            slug: slugify('Physicians', {
+                replacement: '-', // replace spaces with replacement
+                remove: null, // regex to remove characters
+                lower: true, // result in lower case
+            }),
+            key: myKey.getPublic('hex'),
+            description: 'a person qualified to practice medicine'
+        });
+        let type = await newType.save();
+        if (!type) {
+            throw new Error('Something went wrong.Cannot save user type collection!');
+        }
+
+        /**
          * Set extended entities from poeple to users collection
          */
         const newUser = new User({
-            pubkey: myKey.getPublic('hex'),
-            prikey: myKey.getPrivate('hex'),
+            publicKey: myKey.getPublic('hex'),
+            privateKey: myKey.getPrivate('hex'),
             firstname: req.body.firstname,
-            lastname: req.body.lastname
+            lastname: req.body.lastname,
+            usertypes: [{
+                type: type._id
+            }]
         });
         let user = await newUser.save();
         if (!user) {
@@ -53,6 +75,21 @@ exports.register = async(req, res, next) => {
             throw new Error('Something went wrong.Cannot save login credentials!');
         }
 
+        /**
+         * Set new patients type doc in Type Collection
+         */
+        const otherType = new Type({
+            name: 'Patients',
+            slug: slugify('Patients', {
+                replacement: '-', // replace spaces with replacement
+                remove: null, // regex to remove characters
+                lower: true, // result in lower case
+            }),
+            key: myKey.getPublic('hex'),
+            description: 'a person receiving or registered to receive medical treatment.'
+        });
+        await otherType.save();
+
         // specify jade template to load
         var template = process.cwd() + '/views/mail/welcome.jade';
         var context = {
@@ -64,8 +101,6 @@ exports.register = async(req, res, next) => {
         // get template from file system
         fs.readFile(template, 'utf8', async function(err, file) {
             if (err) {
-                //handle errors
-                console.log('ERROR!');
                 return res.send('ERROR!');
             } else {
                 //compile jade template into function

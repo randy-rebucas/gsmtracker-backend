@@ -31,8 +31,9 @@ exports.create = async(req, res, next) => {
 exports.getOne = async(req, res, next) => {
     try {
         const upload = await Upload.findOne({ sourceId: req.params.sourceId }).exec();
+
         res.status(200).json({
-           image: upload.image
+           image: upload ? upload.image : null
         });
     } catch (error) {
         res.status(500).json({
