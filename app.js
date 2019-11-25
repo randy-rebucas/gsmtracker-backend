@@ -36,8 +36,9 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(helmet());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false, limit: '4MB' }));
+app.use(bodyParser.json({ limit: '50MB' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50MB' }));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/files', express.static(path.join(__dirname, 'files')));

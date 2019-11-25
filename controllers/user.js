@@ -4,6 +4,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 const Auth = require('../models/auth');
 const User = require('../models/user');
+const Type = require('../models/type');
 
 const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
@@ -48,12 +49,13 @@ exports.getOne = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-        userIds = req.params.userIds;
-        userId = Ids.split(',');
 
-        /**
-         * delete auth credentials
-         */
+        userIds = req.params.userIds;
+        userId = userIds.split(',');
+        console.log(userId)
+            /**
+             * delete auth credentials
+             */
         let auth = await Auth.deleteMany({ userId: { $in: userId } });
         if (!auth) {
             throw new Error('Error in deleting auth!');
@@ -77,6 +79,7 @@ exports.delete = async(req, res, next) => {
 
 exports.create = async(req, res, next) => {
     try {
+        console.log(req.body);
         /**
          * check for existing email
          */
@@ -94,10 +97,15 @@ exports.create = async(req, res, next) => {
             lastname: req.body.lastname,
             midlename: req.body.midlename,
             gender: req.body.gender,
-            age: req.body.age,
             birthdate: req.body.birthdate,
-            status: req.body.status,
-            contact: req.body.contact
+            contact: req.body.contact,
+            usertypes: [{
+                type: req.body.typeId
+            }],
+            physicians: [{
+                userId: req.body.physician
+            }],
+            metas: req.body.meta
         });
         addressData = req.body.address;
         for (let index = 0; index < addressData.length; index++) {
@@ -147,11 +155,15 @@ exports.update = async(req, res, next) => {
             lastname: req.body.lastname,
             midlename: req.body.midlename,
             gender: req.body.gender,
-            age: req.body.age,
             birthdate: req.body.birthdate,
-            status: req.body.status,
             contact: req.body.contact,
-            classification: req.body.classification
+            usertypes: [{
+                type: req.body.typeId
+            }],
+            physicians: [{
+                userId: req.body.physician
+            }],
+            metas: req.body.meta
         });
         addressData = req.body.address;
         for (let index = 0; index < addressData.length; index++) {
@@ -171,3 +183,88 @@ exports.update = async(req, res, next) => {
     }
 
 };
+
+// ==================
+exports.getNewUser = async(req, res, next) => {
+    try {
+        // const today = moment().startOf('day');
+        // let userType = await Type.findOne({ slug: 'patients' }).exec();
+        // let newPatientCount = await MyUser.countDocuments({
+        //         'userType': userType._id
+        //     })
+        //     .populate({
+        //         path: 'userId',
+        //         populate: {
+        //             path: 'personId',
+        //             model: Person,
+        //             match: {
+        //                 createdAt: {
+        //                     $gte: today.toDate(),
+        //                     $lte: moment(today).endOf('day').toDate()
+        //                 }
+        //             },
+        //         }
+        //     })
+        //     .exec()
+
+        // res.status(200).json({
+        //     count: newPatientCount
+        // });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+exports.getTodaysBirthday = async(req, res, next) => {
+    try {
+        const birthdays = await User.aggregate([{
+            "$redact": {
+                "$cond": [{
+                        "$eq": [
+                            { "$month": "$birthdate" },
+                            { "$month": new Date() }
+                        ]
+                    },
+                    "$$KEEP",
+                    "$$PRUNE"
+                ]
+            }
+        }]);
+
+        res.status(200).json({
+            users: birthdays
+        });
+
+    } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+}
+
+exports.search = async(req, res, next) => {
+    try {
+
+        let userType = await Type.findOne({ slug: 'patients' }).exec();
+        let users = await User.find({ 'usertypes.type': userType._id });
+
+        const result = [];
+        users.forEach(element => {
+            result.push({ id: element._id, name: element.firstname + ', ' + element.lastname });
+        });
+
+        let count = await User.countDocuments({ 'usertypes.type': userType._id });
+
+        res.status(200).json({
+            total: count,
+            results: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
