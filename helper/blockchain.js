@@ -1,7 +1,7 @@
+const BlockchainModel = require('../models/blockchain');
 const SHA256 = require('crypto-js/sha256');
 const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
-
 class Transaction {
   /**
    * @param {string} fromAddress
@@ -136,10 +136,12 @@ class Blockchain {
   /**
    * @returns {Block}
    */
+  // createGenesisBlock() {
+  //   return new Block(Date.parse('2017-01-01'), [], '0');
+  // }
   createGenesisBlock() {
-    return new Block(Date.parse('2017-01-01'), [], '0');
+    return new Block(Date.parse(new Date().toJSON().slice(0, 10)), [], '0');
   }
-
   /**
    * Returns the latest block on our chain. Useful when you want to create a
    * new Block and you need the hash of the previous Block.

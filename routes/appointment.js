@@ -14,7 +14,6 @@ router.post('', checkAuth, AppointmentController.create);
 
 router.put('/:appointmentId', checkAuth, AppointmentController.update);
 
-router.delete('/:appointmentId', checkAuth, AppointmentController.delete);
-
+router.delete('/:appointmentIds', checkAuth, AppointmentController.delete);
 
 module.exports = router;

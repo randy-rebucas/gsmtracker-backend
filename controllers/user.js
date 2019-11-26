@@ -52,7 +52,6 @@ exports.delete = async(req, res, next) => {
 
         userIds = req.params.userIds;
         userId = userIds.split(',');
-        console.log(userId)
             /**
              * delete auth credentials
              */
@@ -247,16 +246,16 @@ exports.getTodaysBirthday = async(req, res, next) => {
 
 exports.search = async(req, res, next) => {
     try {
-
+        //{ 'usertypes.type': userType._id }
         let userType = await Type.findOne({ slug: 'patients' }).exec();
-        let users = await User.find({ 'usertypes.type': userType._id });
+        let users = await User.find();
 
         const result = [];
         users.forEach(element => {
             result.push({ id: element._id, name: element.firstname + ', ' + element.lastname });
         });
 
-        let count = await User.countDocuments({ 'usertypes.type': userType._id });
+        let count = await User.countDocuments();
 
         res.status(200).json({
             total: count,

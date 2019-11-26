@@ -140,15 +140,19 @@ exports.getNewAppointment = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-        let appointment = await Appointment.findById(req.params.appointmentId).exec();
-        // if (appointment.licenseId != req.userData.licenseId) {
-        //     throw new Error('Not Authorized!');
-        // }
-        await Appointment.deleteOne({ _id: req.params.appointmentId });
-
+        appointmentIds = req.params.appointmentIds;
+        appointmentId = appointmentIds.split(',');
+        /**
+         * delete person collection
+         */
+        let appointment = await Appointment.deleteMany({ _id: { $in: appointmentId } });
+        if (!appointment) {
+            throw new Error('Error in deleting appointment!');
+        }
         res.status(200).json({
-            message: 'Deletion successfull!'
+            message: appointment.deletedCount + ' item deleted successfull!'
         });
+
     } catch (error) {
         res.status(500).json({
             message: error.message
