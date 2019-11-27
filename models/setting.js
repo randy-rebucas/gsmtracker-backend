@@ -4,7 +4,7 @@ const settingSchema = mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     general: [{
         owner: { type: String, required: true },
-        name: { type: String, required: true  },
+        name: { type: String, required: true },
         addresses: [{
             address1: { type: String }, // street address
             address2: { type: String }, // street address line 2
@@ -25,6 +25,15 @@ const settingSchema = mongoose.Schema({
             morningOpen: { type: String },
             afternoonClose: { type: String }
         }]
+    }],
+    notification: [{
+        deletedPatient: Boolean,
+        createdAppointment: Boolean,
+        cancelAppointment: Boolean,
+        sentMessage: Boolean,
+        newFeatures: Boolean,
+        newUpdates: Boolean,
+        subscriptionPlan: Boolean
     }]
 });
 

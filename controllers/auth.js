@@ -6,6 +6,7 @@ const nodeMailer = require('nodemailer');
 const Auth = require('../models/auth');
 const User = require('../models/user');
 const Type = require('../models/type');
+const Setting = require('../models/setting');
 
 var _jade = require('jade');
 var fs = require('fs');
@@ -89,6 +90,19 @@ exports.register = async(req, res, next) => {
             description: 'a person receiving or registered to receive medical treatment.'
         });
         await otherType.save();
+
+        /**
+         * Set new setting doc in Setting Collection
+         */
+        const newSetting = new Setting({
+            userId: user._id
+        });
+        newSetting.general.push({
+            name: req.body.name,
+            owner: req.body.firstname + ' ' + req.body.lastname,
+            email: req.body.email
+        });
+        await newSetting.save();
 
         // specify jade template to load
         var template = process.cwd() + '/views/mail/welcome.jade';

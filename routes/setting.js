@@ -6,10 +6,10 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
-router.get('/:userId', SettingController.get);
+router.get('/:userId', SettingController.getSetting);
 
-router.put('', checkAuth, SettingController.update);
+router.put('/general', checkAuth, SettingController.updateGeneral);
 
-router.post('', checkAuth, SettingController.create);
+router.put('/notification', checkAuth, SettingController.updateNotification);
 
 module.exports = router;
