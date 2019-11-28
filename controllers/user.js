@@ -39,6 +39,7 @@ exports.getAll = async(req, res, next) => {
 exports.getOne = async(req, res, next) => {
     try {
         const user = await User.findOne({ _id: new ObjectId(req.params.userId) }).exec();
+
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({
@@ -142,6 +143,82 @@ exports.create = async(req, res, next) => {
         });
     }
 };
+
+exports.updateProfile = async(req, res, next) => {
+    try {
+        let profile = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            {
+                $set: {
+                    firstname: req.body.firstname,
+                    lastname: req.body.lastname,
+                    midlename: req.body.midlename,
+                    gender: req.body.gender,
+                    birthdate: req.body.birthdate,
+                    contact: req.body.contact,
+                    address: req.body.address,
+                    metas: req.body.meta
+                }
+            }
+        );
+        if (!profile) {
+            throw new Error('Something went wrong.Cannot update profile!');
+        }
+
+        res.status(200).json({ message: 'Profile update successful!' });
+
+    } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+}
+
+exports.updateUserTypes = async(req, res, next) => {
+    try {
+        let userTypes = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            {
+                $push: {
+                    usertypes: { type : req.body.typeId }
+                }
+            }
+        );
+        if (!userTypes) {
+            throw new Error('Something went wrong.Cannot update user type!');
+        }
+
+        res.status(200).json({ message: 'User type updated successfully!' });
+
+    } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+}
+
+exports.updatePhysicians = async(req, res, next) => {
+    try {
+        let physicians = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            {
+                $push: {
+                    physicians: { userId : req.body.physician }
+                }
+            }
+        );
+        if (!physicians) {
+            throw new Error('Something went wrong.Cannot update Physicians!');
+        }
+
+        res.status(200).json({ message: 'Physicians updated successfully!' });
+
+    } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+}
 
 exports.update = async(req, res, next) => {
     try {
