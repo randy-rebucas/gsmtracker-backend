@@ -1,20 +1,21 @@
 const slugify = require('slugify');
-const Subscription = require('../models/subscription');
+const Plan = require('../models/plan');
 
 exports.create = async(req, res, next) => {
     try {
-        const newSubscription = new Subscription({
+        const newPlan = new Plan({
             name: req.body.name,
             slug: slugify(req.body.name, {
               replacement: '-', // replace spaces with replacement
               remove: null, // regex to remove characters
               lower: true, // result in lower case
             }),
+            price: req.body.price,
             packages: req.body.packages
         });
-        let subscription = await newSubscription.save();
+        let plan = await newPlan.save();
         res.status(200).json({
-            message: ':: added subscription ' + subscription.name
+            message: ':: added plan ' + plan.name
         });
     } catch (e) {
         res.status(500).json({
@@ -25,26 +26,27 @@ exports.create = async(req, res, next) => {
 
 exports.update = async(req, res, next) => {
     try {
-        const filter = { _id: req.params.subscriptionId };
+        const filter = { _id: req.params.planId };
         const update = {
-            _id: req.body.subscriptionId,
+            _id: req.body.planId,
             name: req.body.name,
             slug: slugify(req.body.name, {
               replacement: '-', // replace spaces with replacement
               remove: null, // regex to remove characters
               lower: true, // result in lower case
             }),
+            price: req.body.price,
             packages: req.body.packages
         };
 
-        let subscription = await Subscription.findOneAndUpdate(filter, update, { new: true });
+        let plan = await Plan.findOneAndUpdate(filter, update, { new: true });
         // type.name;
 
-        if (!subscription) {
-            throw new Error('Something went wrong.Cannot update subscription!');
+        if (!plan) {
+            throw new Error('Something went wrong.Cannot update plan!');
         }
         res.status(200).json({
-            message: 'subscription updated successfully!'
+            message: 'plan updated successfully!'
         });
 
     } catch (e) {
@@ -56,12 +58,12 @@ exports.update = async(req, res, next) => {
 
 exports.getAll = async(req, res, next) => {
     try {
-        let subscription = await Subscription.find()
+        let plan = await Plan.find()
             .sort({ '_id': 'asc' })
             .exec();
 
         res.status(200).json({
-            plans: subscription
+            plans: plan
         });
     } catch (e) {
         res.status(500).json({
@@ -72,11 +74,11 @@ exports.getAll = async(req, res, next) => {
 
 exports.get = async(req, res, next) => {
     try {
-        let subscription = await Subscription.findById(req.params.subscriptionId).exec();
-        if (!subscription) {
-            throw new Error('Something went wrong. Cannot be found type id: ' + req.params.subscriptionId);
+        let plan = await Plan.findById(req.params.planId).exec();
+        if (!plan) {
+            throw new Error('Something went wrong. Cannot be found type id: ' + req.params.planId);
         }
-        res.status(200).json(subscription);
+        res.status(200).json(plan);
 
     } catch (error) {
         res.status(500).json({
@@ -87,11 +89,11 @@ exports.get = async(req, res, next) => {
 
 exports.getBySlug = async(req, res, next) => {
     try {
-        let subscription = await Subscription.findOne({ slug: req.params.slug }).exec();
-        if (!subscription) {
-            throw new Error('Something went wrong. Cannot be found subscription slug: ' + req.params.slug);
+        let plan = await Plan.findOne({ slug: req.params.slug }).exec();
+        if (!plan) {
+            throw new Error('Something went wrong. Cannot be found plan slug: ' + req.params.slug);
         }
-        res.status(200).json(subscription);
+        res.status(200).json(plan);
 
     } catch (error) {
         res.status(500).json({
@@ -102,7 +104,7 @@ exports.getBySlug = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-        await Subscription.deleteOne({ _id: req.params.subscritpionId }).exec();
+        await Plan.deleteOne({ _id: req.params.planId }).exec();
 
         res.status(200).json({ message: 'Deletion successfull!' });
 

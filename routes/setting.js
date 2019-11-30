@@ -6,6 +6,8 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
+router.get('/my-settings/:userId', SettingController.get);
+
 router.get('/:userId', SettingController.getSetting);
 
 router.put('/general', checkAuth, SettingController.updateGeneral);

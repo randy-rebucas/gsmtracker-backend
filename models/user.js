@@ -19,15 +19,13 @@ const userSchema = mongoose.Schema({
         postalCode: { type: Number },
         country: { type: String }
     }],
-    usertypes: [{
-        type: { type: mongoose.Schema.Types.ObjectId, ref: 'Type', required: true }
-    }],
-    physicians: [{
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
-    }],
     metas: [{
         label: { type: String },
         value: { type: String }
+    }],
+    usertypes: { type: mongoose.Schema.Types.ObjectId, ref: 'Type', required: true },
+    physicians: [{
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     }]
 }, { timestamps: {} });
 

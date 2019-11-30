@@ -35,7 +35,10 @@ const settingSchema = mongoose.Schema({
         newUpdates: Boolean,
         subscriptionPlan: Boolean
     }],
-    subscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', default: null }
+    subscription: [{
+        plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Plan', default: null },
+        subscriptionDate: Date
+    }]
 });
 
 module.exports = mongoose.model('Setting', settingSchema);

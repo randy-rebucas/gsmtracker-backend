@@ -7,16 +7,18 @@ exports.updateGeneral = async(req, res, next) => {
             { _id: req.body.id },
             {
                 $set: {
-                    'general.0.name': req.body.name,
-                    'general.0.owner': req.body.owner,
-                    'general.0.email': req.body.email,
-                    'general.0.prc': req.body.prc,
-                    'general.0.ptr': req.body.ptr,
-                    'general.0.s2': req.body.s2,
-                    'general.0.nobreak': req.body.nobreak,
-                    'general.0.addresses': req.body.addresses,
-                    'general.0.phones': req.body.phones,
-                    'general.0.hours': req.body.hours
+                    general: {
+                        name: req.body.name,
+                        owner: req.body.owner,
+                        email: req.body.email,
+                        prc: req.body.prc,
+                        ptr: req.body.ptr,
+                        s2: req.body.s2,
+                        nobreak: req.body.nobreak,
+                        addresses: req.body.addresses,
+                        phones: req.body.phones,
+                        hours: req.body.hours,
+                    }
                 }
             }
         );
@@ -41,13 +43,15 @@ exports.updateNotification = async(req, res, next) => {
             { _id: req.body.id },
             {
                 $set: {
-                    'notification.0.deletedPatient': req.body.deletedPatient,
-                    'notification.0.createdAppointment': req.body.createdAppointment,
-                    'notification.0.cancelAppointment': req.body.cancelAppointment,
-                    'notification.0.sentMessage': req.body.sentMessage,
-                    'notification.0.newFeatures': req.body.newFeatures,
-                    'notification.0.newUpdates': req.body.newUpdates,
-                    'notification.0.subscriptionPlan': req.body.subscriptionPlan
+                    notification: {
+                        deletedPatient: req.body.deletedPatient,
+                        createdAppointment: req.body.createdAppointment,
+                        cancelAppointment: req.body.cancelAppointment,
+                        sentMessage: req.body.sentMessage,
+                        newFeatures: req.body.newFeatures,
+                        newUpdates: req.body.newUpdates,
+                        subscriptionPlan: req.body.subscriptionPlan
+                    }
                 }
             }
         );
@@ -71,8 +75,12 @@ exports.updateSubscription = async(req, res, next) => {
         let settings = await Setting.findOneAndUpdate(
             { _id: req.body.id },
             {
+                // push to add new record of subscription
                 $set: {
-                    subscription: req.body.subscription
+                    subscription: {
+                        plan: req.body.subscription,
+                        subscriptionDate: req.body.subscriptionDate
+                    }
                 }
             }
         );
@@ -81,7 +89,7 @@ exports.updateSubscription = async(req, res, next) => {
             throw new Error('Something went wrong.Cannot update settings!');
         }
 
-        res.status(200).json({ message: 'subscription settings update successful!' });
+        res.status(200).json({ message: 'subscription update successful!' });
 
     } catch (e) {
         res.status(500).json({
@@ -90,6 +98,19 @@ exports.updateSubscription = async(req, res, next) => {
     }
 }
 
+exports.get = async(req, res, next) => {
+    try {
+        let setting = await Setting.findOne({ userId: req.params.userId }).exec();
+        res.status(200).json({
+            settings: setting
+        });
+    } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+};
+
 exports.getSetting = async(req, res, next) => {
     try {
         let setting = await Setting.findOne({ userId: req.params.userId }).exec();
@@ -97,11 +118,13 @@ exports.getSetting = async(req, res, next) => {
         const clinicSettingId = (setting) ? setting._id : null;
         const clinicSettingGeneral = (setting) ? setting.general : null;
         const clinicSettingNotification = (setting) ? setting.notification : null;
+        const clinicSettingSubscription = (setting) ? setting.subscription : null;
 
         res.status(200).json({
             settingId: clinicSettingId,
             general: clinicSettingGeneral,
-            notification: clinicSettingNotification
+            notification: clinicSettingNotification,
+            subscription: clinicSettingSubscription
         });
 
     } catch (e) {

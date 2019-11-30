@@ -79,7 +79,6 @@ exports.delete = async(req, res, next) => {
 
 exports.create = async(req, res, next) => {
     try {
-        console.log(req.body);
         /**
          * check for existing email
          */

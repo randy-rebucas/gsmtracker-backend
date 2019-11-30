@@ -52,9 +52,7 @@ exports.register = async(req, res, next) => {
             privateKey: myKey.getPrivate('hex'),
             firstname: req.body.firstname,
             lastname: req.body.lastname,
-            usertypes: [{
-                type: type._id
-            }]
+            usertypes:  type._id
         });
         let user = await newUser.save();
         if (!user) {
