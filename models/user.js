@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema({
         label: { type: String },
         value: { type: String }
     }],
-    usertypes: { type: mongoose.Schema.Types.ObjectId, ref: 'Type', required: true },
+    usertypes: { type: mongoose.Schema.Types.ObjectId, ref: 'Type' },
     physicians: [{
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     }]

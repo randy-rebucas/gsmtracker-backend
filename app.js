@@ -19,6 +19,7 @@ var uploadRouter = require('./routes/upload');
 var typeRouter = require('./routes/type');
 var planRouter = require('./routes/plan');
 var paymentRouter = require('./routes/payment');
+var queingRouter = require('./routes/queing');
 
 var app = express();
 
@@ -57,6 +58,7 @@ app.use('/api/upload', uploadRouter);
 app.use('/api/type', typeRouter);
 app.use('/api/plan', planRouter);
 app.use('/api/payment', paymentRouter);
+app.use('/api/queing', queingRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

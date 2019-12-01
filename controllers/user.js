@@ -8,7 +8,6 @@ const Type = require('../models/type');
 
 const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
-
 const myKey = ec.genKeyPair();
 
 exports.getAll = async(req, res, next) => {
@@ -16,7 +15,7 @@ exports.getAll = async(req, res, next) => {
 
         const pageSize = +req.query.pagesize;
         const currentPage = +req.query.page;
-        const query = User.find({ 'usertypes.type': req.query.usertype });
+        const query = User.find({ 'usertypes': req.query.usertype });
         if (pageSize && currentPage) {
             query.skip(pageSize * (currentPage - 1)).limit(pageSize);
         }
@@ -50,20 +49,17 @@ exports.getOne = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-
-        userIds = req.params.userIds;
-        userId = userIds.split(',');
             /**
              * delete auth credentials
              */
-        let auth = await Auth.deleteMany({ userId: { $in: userId } });
+        let auth = await Auth.deleteOne({ userId: req.params.userId});
         if (!auth) {
             throw new Error('Error in deleting auth!');
         }
         /**
          * delete person collection
          */
-        let user = await User.deleteMany({ _id: { $in: userId } });
+        let user = await User.deleteOne({ _id: req.params.userId });
         if (!user) {
             throw new Error('Error in deleting person!');
         }
@@ -79,6 +75,7 @@ exports.delete = async(req, res, next) => {
 
 exports.create = async(req, res, next) => {
     try {
+        console.log(req.body);
         /**
          * check for existing email
          */
@@ -90,17 +87,15 @@ exports.create = async(req, res, next) => {
          * Set common entities on people collection
          */
         const newUser = new User({
-            pubkey: myKey.getPublic('hex'),
-            prikey: myKey.getPrivate('hex'),
+            publicKey: myKey.getPublic('hex'),
+            privateKey: myKey.getPrivate('hex'),
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             midlename: req.body.midlename,
             gender: req.body.gender,
             birthdate: req.body.birthdate,
             contact: req.body.contact,
-            usertypes: [{
-                type: req.body.typeId
-            }],
+            usertypes: req.body.typeId,
             physicians: [{
                 userId: req.body.physician
             }],
@@ -173,29 +168,6 @@ exports.updateProfile = async(req, res, next) => {
     }
 }
 
-exports.updateUserTypes = async(req, res, next) => {
-    try {
-        let userTypes = await User.findOneAndUpdate(
-            { _id: req.params.userId },
-            {
-                $push: {
-                    usertypes: { type : req.body.typeId }
-                }
-            }
-        );
-        if (!userTypes) {
-            throw new Error('Something went wrong.Cannot update user type!');
-        }
-
-        res.status(200).json({ message: 'User type updated successfully!' });
-
-    } catch (e) {
-        res.status(500).json({
-            message: e.message
-        });
-    }
-}
-
 exports.updatePhysicians = async(req, res, next) => {
     try {
         let physicians = await User.findOneAndUpdate(
@@ -232,9 +204,7 @@ exports.update = async(req, res, next) => {
             gender: req.body.gender,
             birthdate: req.body.birthdate,
             contact: req.body.contact,
-            usertypes: [{
-                type: req.body.typeId
-            }],
+            usertypes: req.body.typeId,
             physicians: [{
                 userId: req.body.physician
             }],

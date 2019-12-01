@@ -25,7 +25,7 @@ router.put('/:userId', userController.update);
 
 router.put('/:userId/profile', userController.updateProfile);
 
-router.delete('/:userIds', checkAuth, userController.delete);
+router.delete('/:userId', checkAuth, userController.delete);
 
 
 
