@@ -3,9 +3,10 @@ const mongoose = require('./../db/index');
 
 const blockchainSchema = mongoose.Schema({
     timestamp: { type: Date, required: true, default: Date.now },
-    transactions: { type: Array, required: true },
+    transactions: mongoose.Schema.Types.Mixed,
     previousHash: { type: String, required: false },
-    hash: { type: String }
+    hash: { type: String },
+    nonce: Number
 }, { strict: false });
 
 module.exports = mongoose.model('Blockchain', blockchainSchema);
