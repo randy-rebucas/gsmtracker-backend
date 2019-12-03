@@ -10,6 +10,7 @@ exports.updateGeneral = async(req, res, next) => {
                     general: {
                         name: req.body.name,
                         owner: req.body.owner,
+                        practice: req.body.practice,
                         email: req.body.email,
                         prc: req.body.prc,
                         ptr: req.body.ptr,

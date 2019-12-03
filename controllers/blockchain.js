@@ -70,30 +70,31 @@ exports.getChain = async(req, res, next) => {
 
 exports.createBlock = async(req, res, next) => {
     try {
-        const newBlock = new Blockchain({
-            timestamp: req.timestamp,
-            previousHash: req.lastBlock.hash,
-            transactions: req.body.transactions,
-            hash: req.calculateHash
-        });
+        console.log(req);
+        // const newBlock = new Blockchain({
+        //     timestamp: req.timestamp,
+        //     previousHash: req.lastBlock.hash,
+        //     transactions: req.body.transactions,
+        //     hash: req.calculateHash
+        // });
 
-        let mineBlocked = await this.mineBlock();
-        if (!mineBlocked) {
-            throw new Error('Something went wrong.Cannot mined this block!');
-        }
+        // let mineBlocked = await this.mineBlock();
+        // if (!mineBlocked) {
+        //     throw new Error('Something went wrong.Cannot mined this block!');
+        // }
 
-        let block = await newBlock.save();
-        if (!block) {
-            throw new Error('Something went wrong.Cannot save new block!');
-        }
+        // let block = await newBlock.save();
+        // if (!block) {
+        //     throw new Error('Something went wrong.Cannot save new block!');
+        // }
 
-        res.status(200).json({
-            message: 'Block added successfully',
-            blocks: {
-                ...block,
-                id: block._id,
-            }
-        });
+        // res.status(200).json({
+        //     message: 'Block added successfully',
+        //     blocks: {
+        //         ...block,
+        //         id: block._id,
+        //     }
+        // });
     } catch (e) {
         res.status(500).json({
             message: e.message

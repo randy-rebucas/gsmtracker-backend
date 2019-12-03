@@ -4,6 +4,7 @@ const settingSchema = mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     general: [{
         owner: { type: String, required: true },
+        practice: { type: String },
         name: { type: String, required: true },
         addresses: [{
             address1: { type: String }, // street address

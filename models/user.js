@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose');
 const mongoose = require('./../db/index');
 
 const userSchema = mongoose.Schema({
