@@ -6,10 +6,6 @@ const Auth = require('../models/auth');
 const User = require('../models/user');
 const Type = require('../models/type');
 
-const EC = require('elliptic').ec;
-const ec = new EC('secp256k1');
-const myKey = ec.genKeyPair();
-
 exports.getAll = async(req, res, next) => {
     try {
 
@@ -87,8 +83,8 @@ exports.create = async(req, res, next) => {
          * Set common entities on people collection
          */
         const newUser = new User({
-            publicKey: myKey.getPublic('hex'),
-            privateKey: myKey.getPrivate('hex'),
+            publicKey: req.publicKey,
+            privateKey: req.privateKey,
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             midlename: req.body.midlename,

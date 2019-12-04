@@ -5,11 +5,10 @@ const router = express.Router();
  */
 const blockchainCtrlr = require('../controllers/blockchain');
 
-const lastblock = require('../middleware/last-block');
-const calculate = require('../middleware/calculate-hash');
+const mined = require('../middleware/mined-block');
 
 router.get('', blockchainCtrlr.getChain);
 
-router.post('', lastblock, calculate, blockchainCtrlr.createBlock);
+router.post('', mined, blockchainCtrlr.createBlock);
 
 module.exports = router;

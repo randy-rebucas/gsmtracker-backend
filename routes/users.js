@@ -4,6 +4,7 @@ const router = express.Router();
  * loads middlewares
  */
 const checkAuth = require('../middleware/check-auth');
+const generateKey = require('../middleware/generate-key');
 /**
  * load controller
  */
@@ -19,7 +20,7 @@ router.get('', userController.getAll);
 
 router.get('/:userId', userController.getOne);
 
-router.post('', checkAuth, userController.create);
+router.post('', checkAuth, generateKey, userController.create);
 
 router.put('/:userId', userController.update);
 

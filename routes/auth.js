@@ -4,6 +4,7 @@ const router = express.Router();
  * loads middlewares
  */
 const generateKey = require('../middleware/generate-key');
+
 /**
  * load controller
  */

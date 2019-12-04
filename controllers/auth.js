@@ -13,185 +13,195 @@ const Blockchain = require('../models/blockchain');
 var _jade = require('jade');
 var fs = require('fs');
 
-const timestamp = Date.parse(new Date().toJSON().slice(0, 10));
+const SHA256 = require('crypto-js/sha256');
+// const timestamp = Date.parse(new Date().toJSON().slice(0, 10));
 
-exports.calculateHash = async(req, res, next) => {
-    return SHA256(JSON.stringify(req.body.transaction) + timestamp + '0' + 0).toString();
-}
+// exports.calculateHash = async(req, res, next) => {
+//     return SHA256(JSON.stringify(req.body.transaction) + timestamp + '0' + 0).toString();
+// }
 
 exports.register = async(req, res, next) => {
     try {
         /**
          * Set new patients type doc in Type Collection
          */
-        const difficulty = 4;
+        // const difficulty = 4;
+        // const timestamp = Date.parse(new Date().toJSON().slice(0, 10));
+        // let nonce = 0;
 
-        const transactions = {
-            from: 'Polycode', //Providers public key
-            to: 'Youtube', //patient public key
-            message: `${req.privateKey} chained in block.`, // Provider added a record on Patient
-            records: [
-                { height: { value: 5 + 5, hasUnit: true, unit: 'cm' } },
-                { weight: { value: 1 * 9, hasUnit: true, unit: 'kg' } },
-                { temperature: { value: 34, hasUnit: true, unit: '°C' } }
-            ]
-        };
-        const hash = this.calculateHash(transactions);
-
-        let lastBlock = Blockchain.findOne({}, null, { sort: { _id: -1 }, limit: 1 });
-
-        const newBlock = new Blockchain({
-            previousHash: lastBlock.hash ? lastBlock.hash : '0',
-            transactions: transactions,
-            hash: hash
-        });
-
-        while (hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
-            nonce++;
-            hash = this.calculateHash(transactions);
-        }
-        console.log(hash);
-        let block = await newBlock.save();
-        console.log(block);
-        // /**
-        //  * check for existing email
-        //  */
-        // let authCheck = await Auth.findOne({ email: req.body.email });
-        // if (authCheck) {
-        //     throw new Error('Something went wrong. Email is in used!');
-        // }
-        // /**
-        //  * Set extended entities from poeple to users collection
-        //  */
-        // const newUser = new User({
-        //     publicKey: req.publicKey,
-        //     privateKey: req.privateKey,
-        //     firstname: req.body.firstname,
-        //     lastname: req.body.lastname,
-        //     // usertypes:  type._id
-        // });
-        // let user = await newUser.save();
-        // if (!user) {
-        //     throw new Error('Something went wrong.Cannot save user!');
-        // }
-
-        // /**
-        //  * Set physicians doc in type collection
-        //  */
-        // const newType = new Type({
-        //     name: 'Physicians',
-        //     slug: slugify('Physicians', {
-        //         replacement: '-', // replace spaces with replacement
-        //         remove: null, // regex to remove characters
-        //         lower: true, // result in lower case
-        //     }),
-        //     userID: user._id,
-        //     description: 'a person qualified to practice medicine'
-        // });
-        // let type = await newType.save();
-        // if (!type) {
-        //     throw new Error('Something went wrong.Cannot save user type collection!');
-        // }
-
-        // /**
-        //  * update user type
-        //  */
-
-        // let updatedUser = await User.updateOne({ _id: user._id }, { $set: { usertypes: type._id } });
-        // if (!updatedUser) {
-        //     throw new Error('Something went wrong.Cannot update user type!');
-        // }
-        // /**
-        //  * Set login credentials in auth collection
-        //  */
-        // const salt = await bcrypt.genSalt(10);
-        // const hash = await bcrypt.hash(req.body.password, salt);
-        // const authCredentials = new Auth({
-        //     email: req.body.email,
-        //     password: hash,
-        //     userId: user._id
-        // });
-        // let auth = await authCredentials.save();
-        // if (!auth) {
-        //     throw new Error('Something went wrong.Cannot save login credentials!');
-        // }
-
-        // /**
-        //  * Set new patients type doc in Type Collection
-        //  */
-        // const otherType = new Type({
-        //     name: 'Patients',
-        //     slug: slugify('Patients', {
-        //         replacement: '-', // replace spaces with replacement
-        //         remove: null, // regex to remove characters
-        //         lower: true, // result in lower case
-        //     }),
-        //     userID: user._id,
-        //     description: 'a person receiving or registered to receive medical treatment.'
-        // });
-        // await otherType.save();
-
-        // /**
-        //  * Set new setting doc in Setting Collection
-        //  */
-        // const newSetting = new Setting({
-        //     userId: user._id
-        // });
-        // newSetting.general.push({
-        //     name: req.body.name,
-        //     owner: req.body.firstname + ' ' + req.body.lastname,
-        //     email: req.body.email,
-        //     practice: req.body.practice
-        // });
-        // await newSetting.save();
-
-        // // ==============
-
-        // // specify jade template to load
-        // var template = process.cwd() + '/views/mail/welcome.jade';
-        // var context = {
-        //     email: req.body.email,
-        //     password: req.body.password,
-        //     site_name: 'cutsonwheel',
-        //     site_origin: req.protocol + '://' + req.get('host')
+        // const transactions = {
+        //     from: 'Polycode', //Providers public key
+        //     to: 'Youtube', //patient public key
+        //     message: `${req.privateKey} chained in block.`, // Provider added a record on Patient
+        //     records: [
+        //         { height: { value: 5 + 5, hasUnit: true, unit: 'cm' } },
+        //         { weight: { value: 1 * 9, hasUnit: true, unit: 'kg' } },
+        //         { temperature: { value: 34, hasUnit: true, unit: '°C' } }
+        //     ]
         // };
-        // // get template from file system
-        // fs.readFile(template, 'utf8', async function(err, file) {
-        //     if (err) {
-        //         return res.send('ERROR!');
-        //     } else {
-        //         //compile jade template into function
-        //         var compiledTmpl = _jade.compile(file, { filename: template });
-        //         // get html back as a string with the context applied;
-        //         var content = compiledTmpl(context);
+   
+        // const lastBlock = await Blockchain.findOne({}, null, { sort: { _id: -1 }, limit: 1 }).exec();
+        // const previousHash = lastBlock ? lastBlock.hash : '0';
+        // console.log('preveous hash: ' + previousHash);
 
-        //         var transporter = nodeMailer.createTransport({
-        //             host: 'sg2plcpnl0135.prod.sin2.secureserver.net',
-        //             port: 465,
-        //             secure: true,
-        //             auth: {
-        //                 user: 'admin@cutsonwheel.com', // sender's gmail id
-        //                 pass: '?.&W;S$n8@[7' // sender password
-        //             }
-        //         });
+        // let hash = SHA256(JSON.stringify(transactions) + timestamp + previousHash + nonce).toString();
+        // console.log('first hash: ' + hash);
 
-        //         let mailOptions = {
-        //             from: 'cutsonwheel <admin@cutsonwheel.com>',
-        //             to: req.body.email,
-        //             subject: 'New Account Registration',
-        //             html: content
-        //         }
-        //         let info = await transporter.sendMail(mailOptions);
-        //         if (!info) {
-        //             throw new error('Something went wrong! Sending email failed!')
-        //         }
+        // while (hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+        //     nonce++;
+        //     hash = SHA256(JSON.stringify(transactions) + timestamp + previousHash + nonce).toString();
+        // }
+        // console.log('nonce: '+ nonce);
+        // console.log('new hash: ' + hash);
 
-        //         res.status(200).json({
-        //             message: 'Registered successfully!',
-        //             userId: auth.userId,
-        //         });
-        //     }
+        // const newBlock = new Blockchain({
+        //     timestamp: req.timestamp,
+        //     transactions: req.transactions,
+        //     previousHash: req.previousHash,
+        //     hash: req.hash,
+        //     nonce: req.nonce
         // });
+
+        // let block = await newBlock.save();
+        // console.log(block);
+        /**
+         * check for existing email
+         */
+        let authCheck = await Auth.findOne({ email: req.body.email });
+        if (authCheck) {
+            throw new Error('Something went wrong. Email is in used!');
+        }
+        /**
+         * Set extended entities from poeple to users collection
+         */
+        const newUser = new User({
+            publicKey: req.publicKey,
+            privateKey: req.privateKey,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname
+        });
+        let user = await newUser.save();
+        if (!user) {
+            throw new Error('Something went wrong.Cannot save user!');
+        }
+
+        /**
+         * Set physicians doc in type collection
+         */
+        const newType = new Type({
+            name: 'Physicians',
+            slug: slugify('Physicians', {
+                replacement: '-', // replace spaces with replacement
+                remove: null, // regex to remove characters
+                lower: true, // result in lower case
+            }),
+            userID: user._id,
+            description: 'a person qualified to practice medicine'
+        });
+        let type = await newType.save();
+        if (!type) {
+            throw new Error('Something went wrong.Cannot save user type collection!');
+        }
+
+        /**
+         * update user type
+         */
+
+        let updatedUser = await User.updateOne({ _id: user._id }, { $set: { usertypes: type._id } });
+        if (!updatedUser) {
+            throw new Error('Something went wrong.Cannot update user type!');
+        }
+        /**
+         * Set login credentials in auth collection
+         */
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(req.body.password, salt);
+        const authCredentials = new Auth({
+            email: req.body.email,
+            password: hash,
+            userId: user._id
+        });
+        let auth = await authCredentials.save();
+        if (!auth) {
+            throw new Error('Something went wrong.Cannot save login credentials!');
+        }
+
+        /**
+         * Set new patients type doc in Type Collection
+         */
+        const otherType = new Type({
+            name: 'Patients',
+            slug: slugify('Patients', {
+                replacement: '-', // replace spaces with replacement
+                remove: null, // regex to remove characters
+                lower: true, // result in lower case
+            }),
+            userID: user._id,
+            description: 'a person receiving or registered to receive medical treatment.'
+        });
+        await otherType.save();
+
+        /**
+         * Set new setting doc in Setting Collection
+         */
+        const newSetting = new Setting({
+            userId: user._id
+        });
+        newSetting.general.push({
+            name: req.body.name,
+            owner: req.body.firstname + ' ' + req.body.lastname,
+            email: req.body.email,
+            practice: req.body.practice
+        });
+        await newSetting.save();
+
+        // ==============
+
+        // specify jade template to load
+        var template = process.cwd() + '/views/mail/welcome.jade';
+        var context = {
+            email: req.body.email,
+            password: req.body.password,
+            site_name: 'cutsonwheel',
+            site_origin: req.protocol + '://' + req.get('host')
+        };
+        // get template from file system
+        fs.readFile(template, 'utf8', async function(err, file) {
+            if (err) {
+                return res.send('ERROR!');
+            } else {
+                //compile jade template into function
+                var compiledTmpl = _jade.compile(file, { filename: template });
+                // get html back as a string with the context applied;
+                var content = compiledTmpl(context);
+
+                var transporter = nodeMailer.createTransport({
+                    host: 'sg2plcpnl0135.prod.sin2.secureserver.net',
+                    port: 465,
+                    secure: true,
+                    auth: {
+                        user: 'admin@cutsonwheel.com', // sender's gmail id
+                        pass: '?.&W;S$n8@[7' // sender password
+                    }
+                });
+
+                let mailOptions = {
+                    from: 'cutsonwheel <admin@cutsonwheel.com>',
+                    to: req.body.email,
+                    subject: 'New Account Registration',
+                    html: content
+                }
+                let info = await transporter.sendMail(mailOptions);
+                if (!info) {
+                    throw new error('Something went wrong! Sending email failed!')
+                }
+
+                res.status(200).json({
+                    message: 'Registered successfully!',
+                    user: user,
+                });
+            }
+        });
 
     } catch (e) {
         res.status(500).json({
