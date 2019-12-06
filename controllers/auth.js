@@ -13,12 +13,7 @@ const Blockchain = require('../models/blockchain');
 var _jade = require('jade');
 var fs = require('fs');
 
-const SHA256 = require('crypto-js/sha256');
-// const timestamp = Date.parse(new Date().toJSON().slice(0, 10));
-
-// exports.calculateHash = async(req, res, next) => {
-//     return SHA256(JSON.stringify(req.body.transaction) + timestamp + '0' + 0).toString();
-// }
+const mail = require('./../helper/mailer');
 
 exports.register = async(req, res, next) => {
     try {
@@ -156,53 +151,24 @@ exports.register = async(req, res, next) => {
         await newSetting.save();
 
         // ==============
-
-        // specify jade template to load
-        var template = process.cwd() + '/views/mail/welcome.jade';
-        var context = {
-            email: req.body.email,
-            password: req.body.password,
-            site_name: 'cutsonwheel',
-            site_origin: req.protocol + '://' + req.get('host')
+        const context = {
+          email: req.body.email,
+          password: req.body.password,
+          site_name: 'cutsonwheel',
+          site_origin: req.protocol + '://' + req.get('host')
         };
-        // get template from file system
-        fs.readFile(template, 'utf8', async function(err, file) {
-            if (err) {
-                return res.send('ERROR!');
-            } else {
-                //compile jade template into function
-                var compiledTmpl = _jade.compile(file, { filename: template });
-                // get html back as a string with the context applied;
-                var content = compiledTmpl(context);
+        await mail.sendMail(
+          'welcome',
+          context,
+          'cutsonwheel <admin@cutsonwheel.com>',
+          req.body.email,
+          'New Account Registration'
+        );
 
-                var transporter = nodeMailer.createTransport({
-                    host: 'sg2plcpnl0135.prod.sin2.secureserver.net',
-                    port: 465,
-                    secure: true,
-                    auth: {
-                        user: 'admin@cutsonwheel.com', // sender's gmail id
-                        pass: '?.&W;S$n8@[7' // sender password
-                    }
-                });
-
-                let mailOptions = {
-                    from: 'cutsonwheel <admin@cutsonwheel.com>',
-                    to: req.body.email,
-                    subject: 'New Account Registration',
-                    html: content
-                }
-                let info = await transporter.sendMail(mailOptions);
-                if (!info) {
-                    throw new error('Something went wrong! Sending email failed!')
-                }
-
-                res.status(200).json({
-                    message: 'Registered successfully!',
-                    user: user,
-                });
-            }
+        res.status(200).json({
+            message: 'Registered successfully!',
+            user: user,
         });
-
     } catch (e) {
         res.status(500).json({
             message: e.message
