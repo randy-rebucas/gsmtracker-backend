@@ -99,6 +99,38 @@ exports.updateSubscription = async(req, res, next) => {
     }
 }
 
+exports.updateRecordOptions = async(req, res, next) => {
+    try {
+
+        let settings = await Setting.findOneAndUpdate(
+            { _id: req.body.id },
+            {
+                // push to add new record of subscription
+                $set: {
+                    records: {
+                        recordType: req.body.recordType,
+                        recordOptions: {
+                            isExpanded: req.body.expanded,
+                            isRemove: req.body.remove
+                        }
+                    }
+                }
+            }
+        );
+
+        if (!settings) {
+            throw new Error('Something went wrong.Cannot update settings!');
+        }
+
+        res.status(200).json({ message: 'subscription update successful!' });
+
+    } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+}
+
 exports.get = async(req, res, next) => {
     try {
         let setting = await Setting.findOne({ userId: req.params.userId }).exec();

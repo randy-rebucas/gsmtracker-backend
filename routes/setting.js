@@ -16,4 +16,6 @@ router.put('/notification', checkAuth, SettingController.updateNotification);
 
 router.put('/subscription', checkAuth, SettingController.updateSubscription);
 
+router.put('/record', checkAuth, SettingController.updateRecordOptions);
+
 module.exports = router;

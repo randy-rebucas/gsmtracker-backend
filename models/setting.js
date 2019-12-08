@@ -1,5 +1,13 @@
 const mongoose = require('./../db/index');
 
+const recordSchema = mongoose.Schema({
+    recordType: String,
+    recordOptions: [{
+        isExpanded: { type: Boolean, default: false },
+        isRemove: { type: Boolean, default: false }
+    }]
+});
+
 const settingSchema = mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     general: [{
@@ -39,7 +47,9 @@ const settingSchema = mongoose.Schema({
     subscription: [{
         plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Plan', default: null },
         subscriptionDate: Date
-    }]
+    }],
+    records: [recordSchema]
 });
+
 
 module.exports = mongoose.model('Setting', settingSchema);
