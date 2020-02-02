@@ -2,7 +2,6 @@ const Upload = require('../models/upload');
 
 exports.create = async(req, res, next) => {
     try {
-
         let uploadCheck = await Upload.findOne({ sourceId: req.body.origId });
 
         const newUpload = new Upload({

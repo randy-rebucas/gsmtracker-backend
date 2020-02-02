@@ -4,7 +4,7 @@ exports.getChain = async(req, res, next) => {
     try {
         const pageSize = +req.query.pagesize;
         const currentPage = +req.query.page;
-        const query = Blockchain.find({ 'transaction.provider': req.query.providerKey });
+        const query = Blockchain.find();
         if (pageSize && currentPage) {
             query.skip(pageSize * (currentPage - 1)).limit(pageSize);
         }
