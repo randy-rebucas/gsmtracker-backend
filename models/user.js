@@ -1,42 +1,37 @@
 const mongoose = require('./../db/index');
 
-const userSchema = mongoose.Schema({
-    publicKey: { type: String, require: true },
-    privateKey: { type: String, require: true },
-    firstname: { type: String, required: true },
-    midlename: { type: String, default: null },
-    lastname: { type: String, required: true },
-    gender: { type: String, default: null },
+const schema = mongoose.Schema({
+    name: {
+		firstname: { type: String, required: true },
+		midlename: { type: String, default: null },
+		lastname: { type: String, required: true }
+    },
+    publicKey: String,
+    privateKey: String,
+    gender: String,
     birthdate: { type: Date, default: null },
-    contact: { type: String, default: null },
-    address: [{
-        current: { type: Boolean },
-        address1: { type: String }, // street address
-        address2: { type: String }, // street address line 2
-        city: { type: String },
-        province: { type: String },
-        postalCode: { type: Number },
-        country: { type: String }
-    }],
-    metas: [{
-        label: { type: String },
-        value: { type: String }
-    }],
-    usertypes: { type: mongoose.Schema.Types.ObjectId, ref: 'Type' },
-    physicians: [{
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    contact: String,
+    addresses: [{
+        current: Boolean,
+        address1: String, // street address
+        address2: String, // street address line 2
+        city: String,
+        province: String,
+        postalCode: Number,
+        country: String
     }]
 }, { timestamps: {} });
 
-userSchema.virtual('fullName').get(() => {
-    return this.firstname + ' ' + this.lastname
+schema.virtual('fullName').get(() => {
+    return this.firstname + ' ' + this.midlename + ' ' + this.lastname
 })
 
-userSchema.virtual('fullName').set((name) => {
+schema.virtual('fullName').set((name) => {
     let str = name.split(' ')
 
     this.firstname = str[0]
-    this.lastname = str[1]
+    this.midlename = str[1]
+    this.lastname = str[2]
 })
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Users', schema);

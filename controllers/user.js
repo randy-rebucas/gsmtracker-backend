@@ -4,24 +4,24 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 const Auth = require('../models/auth');
 const User = require('../models/user');
-const Type = require('../models/type');
+const Patient = require('../models/patient');
 
 exports.getAll = async(req, res, next) => {
     try {
 
         const pageSize = +req.query.pagesize;
         const currentPage = +req.query.page;
-        const query = User.find({ 'usertypes': req.query.usertype });
+        const query = Patient.find().populate('userId');
         if (pageSize && currentPage) {
             query.skip(pageSize * (currentPage - 1)).limit(pageSize);
         }
-        let users = await query.exec();
-        let userCount = await User.countDocuments();
+        let patients = await query.exec();
+        let patientCount = await Patient.countDocuments();
 
         res.status(200).json({
-            message: 'Users fetched successfully!',
-            users: users,
-            counts: userCount
+            message: 'Patient fetched successfully!',
+            users: patients,
+            counts: patientCount
         });
 
     } catch (error) {
@@ -71,7 +71,7 @@ exports.delete = async(req, res, next) => {
 
 exports.create = async(req, res, next) => {
     try {
-        console.log(req.body);
+
         /**
          * check for existing email
          */
@@ -82,50 +82,19 @@ exports.create = async(req, res, next) => {
         /**
          * Set common entities on people collection
          */
-        const newUser = new User({
-            publicKey: req.publicKey,
-            privateKey: req.privateKey,
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            midlename: req.body.midlename,
-            gender: req.body.gender,
-            birthdate: req.body.birthdate,
-            contact: req.body.contact,
-            usertypes: req.body.typeId,
-            physicians: [{
-                userId: req.body.physician
-            }],
-            metas: req.body.meta
-        });
-        addressData = req.body.address;
-        for (let index = 0; index < addressData.length; index++) {
-            newUser.address.push(addressData[index]);
-        }
+        const newUser = new User(req.body);
+
         let user = await newUser.save();
         if (!user) {
             throw new Error('Something went wrong.Cannot save user data!');
-        }
-        /**
-         * Set login credentials in auth collection
-         */
-        const salt = await bcrypt.genSalt(10);
-        let hash = await bcrypt.hash(req.body.password, salt);
-        const authCredentials = new Auth({
-            email: req.body.email,
-            password: hash,
-            userId: user._id
-        });
-        let auth = await authCredentials.save();
-        if (!auth) {
-            throw new Error('Something went wrong.Cannot save auth collection!');
         }
 
         res.status(200).json({
             message: 'User added successfully',
             users: {
                 ...user,
-                id: user._id,
-            }
+            },
+            id: user._id
         });
     } catch (e) {
         res.status(500).json({
@@ -133,36 +102,6 @@ exports.create = async(req, res, next) => {
         });
     }
 };
-
-exports.updateProfile = async(req, res, next) => {
-    try {
-        let profile = await User.findOneAndUpdate(
-            { _id: req.params.userId },
-            {
-                $set: {
-                    firstname: req.body.firstname,
-                    lastname: req.body.lastname,
-                    midlename: req.body.midlename,
-                    gender: req.body.gender,
-                    birthdate: req.body.birthdate,
-                    contact: req.body.contact,
-                    address: req.body.address,
-                    metas: req.body.meta
-                }
-            }
-        );
-        if (!profile) {
-            throw new Error('Something went wrong.Cannot update profile!');
-        }
-
-        res.status(200).json({ message: 'Profile update successful!' });
-
-    } catch (e) {
-        res.status(500).json({
-            message: e.message
-        });
-    }
-}
 
 exports.updatePhysicians = async(req, res, next) => {
     try {
@@ -192,25 +131,8 @@ exports.update = async(req, res, next) => {
         /**
          * Set common entities on people collection
          */
-        const newUser = new User({
-            _id: req.params.userId,
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            midlename: req.body.midlename,
-            gender: req.body.gender,
-            birthdate: req.body.birthdate,
-            contact: req.body.contact,
-            usertypes: req.body.typeId,
-            physicians: [{
-                userId: req.body.physician
-            }],
-            metas: req.body.meta
-        });
-        addressData = req.body.address;
-        for (let index = 0; index < addressData.length; index++) {
-            newUser.address.push(addressData[index]);
-        }
-
+        const newUser = new User(req.body);
+        
         let user = await User.findOneAndUpdate({ _id: req.params.userId }, newUser, { new: true });
         if (!user) {
             throw new Error('Something went wrong.Cannot update user data!');
@@ -289,12 +211,12 @@ exports.getTodaysBirthday = async(req, res, next) => {
 exports.search = async(req, res, next) => {
     try {
         //{ 'usertypes.type': userType._id }
-        let userType = await Type.findOne({ slug: 'patients' }).exec();
+        let userType = await User.findOne().exec();
         let users = await User.find();
 
         const result = [];
         users.forEach(element => {
-            result.push({ id: element._id, name: element.firstname + ', ' + element.lastname });
+            result.push({ id: element._id, name: element.name.firstname + ', ' + element.name.lastname });
         });
 
         let count = await User.countDocuments();

@@ -7,27 +7,36 @@ var logger = require('morgan');
 var helmet = require('helmet');
 var cors = require('cors');
 
+/**
+ * Routes
+ */
 var indexRouter = require('./routes/index');
 var blockchainRouter = require('./routes/blockchain');
 var authRouter = require('./routes/auth');
 var userRouter = require('./routes/users');
+var patientRouter = require('./routes/patients');
+var physicianRouter = require('./routes/physicians');
 var appointmentRouter = require('./routes/appointment');
 var messageRouter = require('./routes/message');
 var settingRouter = require('./routes/setting');
-
 var uploadRouter = require('./routes/upload');
-var typeRouter = require('./routes/type');
 var planRouter = require('./routes/plan');
 var paymentRouter = require('./routes/payment');
 var queingRouter = require('./routes/queing');
+var drugsRouter = require('./routes/drugs');
+var categoriesRouter = require('./routes/categories');
+var supplierRouter = require('./routes/supplier');
+var manufacturerRouter = require('./routes/manufacturer');
 
 var app = express();
 
+/**
+ * CORS
+ */
 var corsOptions = {
     origin: '*',
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
-
 app.use(cors(corsOptions));
 
 // remove default powered by on header
@@ -50,16 +59,19 @@ app.use('/', indexRouter);
 app.use('/api/blockchain', blockchainRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use('/api/patients', patientRouter);
+app.use('/api/physicians', physicianRouter);
 app.use('/api/appointments', appointmentRouter);
 app.use('/api/messages', messageRouter);
 app.use('/api/setting', settingRouter);
-
 app.use('/api/upload', uploadRouter);
-app.use('/api/type', typeRouter);
 app.use('/api/plan', planRouter);
 app.use('/api/payment', paymentRouter);
 app.use('/api/queing', queingRouter);
-
+app.use('/api/drugs', drugsRouter);
+app.use('/api/categories', categoriesRouter);
+app.use('/api/supplier', supplierRouter);
+app.use('/api/manufacturer', manufacturerRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next(createError(404));

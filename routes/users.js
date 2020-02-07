@@ -24,8 +24,6 @@ router.post('', checkAuth, generateKey, userController.create);
 
 router.put('/:userId', userController.update);
 
-router.put('/:userId/profile', userController.updateProfile);
-
 router.delete('/:userId', checkAuth, userController.delete);
 
 

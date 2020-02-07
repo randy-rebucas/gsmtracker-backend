@@ -5,8 +5,7 @@ const nodeMailer = require('nodemailer');
 
 const Auth = require('../models/auth');
 const User = require('../models/user');
-const Type = require('../models/type');
-const Setting = require('../models/setting');
+const Physicians = require('../models/physician');
 
 const Blockchain = require('../models/blockchain');
 
@@ -70,42 +69,19 @@ exports.register = async(req, res, next) => {
          * Set extended entities from poeple to users collection
          */
         const newUser = new User({
+            name: {
+                firstname: req.body.firstname,
+                lastname: req.body.lastname
+            },
             publicKey: req.publicKey,
-            privateKey: req.privateKey,
-            firstname: req.body.firstname,
-            lastname: req.body.lastname
+            privateKey: req.privateKey
         });
         let user = await newUser.save();
+
         if (!user) {
             throw new Error('Something went wrong.Cannot save user!');
         }
 
-        /**
-         * Set physicians doc in type collection
-         */
-        const newType = new Type({
-            name: 'Physicians',
-            slug: slugify('Physicians', {
-                replacement: '-', // replace spaces with replacement
-                remove: null, // regex to remove characters
-                lower: true, // result in lower case
-            }),
-            userID: user._id,
-            description: 'a person qualified to practice medicine'
-        });
-        let type = await newType.save();
-        if (!type) {
-            throw new Error('Something went wrong.Cannot save user type collection!');
-        }
-
-        /**
-         * update user type
-         */
-
-        let updatedUser = await User.updateOne({ _id: user._id }, { $set: { usertypes: type._id } });
-        if (!updatedUser) {
-            throw new Error('Something went wrong.Cannot update user type!');
-        }
         /**
          * Set login credentials in auth collection
          */
@@ -121,36 +97,15 @@ exports.register = async(req, res, next) => {
             throw new Error('Something went wrong.Cannot save login credentials!');
         }
 
-        /**
-         * Set new patients type doc in Type Collection
-         */
-        const otherType = new Type({
-            name: 'Patients',
-            slug: slugify('Patients', {
-                replacement: '-', // replace spaces with replacement
-                remove: null, // regex to remove characters
-                lower: true, // result in lower case
-            }),
-            userID: user._id,
-            description: 'a person receiving or registered to receive medical treatment.'
+        const newPhysician = new Physicians({
+            userId: user._id,
+            description: 'a person qualified to practice medicine.'
         });
-        await otherType.save();
+        let physician = await newPhysician.save();
+        if (!physician) {
+            throw new Error('Something went wrong.Cannot save physician data!');
+        }
 
-        /**
-         * Set new setting doc in Setting Collection
-         */
-        const newSetting = new Setting({
-            userId: user._id
-        });
-        newSetting.general.push({
-            name: req.body.name,
-            owner: req.body.firstname + ' ' + req.body.lastname,
-            email: req.body.email,
-            practice: req.body.practice
-        });
-        await newSetting.save();
-
-        // ==============
         const context = {
           email: req.body.email,
           password: req.body.password,
