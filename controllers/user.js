@@ -83,7 +83,9 @@ exports.create = async(req, res, next) => {
          * Set common entities on people collection
          */
         const newUser = new User(req.body);
-
+        newUser.publicKey = req.publicKey;
+        newUser.privateKey = req.privateKey;
+        
         let user = await newUser.save();
         if (!user) {
             throw new Error('Something went wrong.Cannot save user data!');

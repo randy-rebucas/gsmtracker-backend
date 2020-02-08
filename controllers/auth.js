@@ -152,15 +152,17 @@ exports.login = async(req, res, next) => {
 
         let token = await jwt.sign({
                 email: auth.email,
-                userId: user._id
+                userId: user._id,
+                privateKey: user.privateKey
             },
             process.env.JWT_KEY, {}
         );
 
         res.status(200).json({
             token: token,
+            userEmail: auth.email,
             userId: user._id,
-            userEmail: auth.email
+            privateKey: user.privateKey
         });
     } catch (error) {
         res.status(500).json({

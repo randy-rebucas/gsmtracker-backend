@@ -2,16 +2,8 @@ const Drug = require('../models/drug');
 
 exports.create = async(req, res, next) => {
     try {
-        const drug = new Drug({
-            genericName: req.body.genericName,
-            categories: req.body.categoryId,
-            strength: req.body.strength,
-            dosage: req.body.dosage,
-            quantity: req.body.quantity,
-            brandName: req.body.brandName,
-            supplier: req.body.supplierId,
-            manufacturer: req.body.manufacturerId,
-        });
+        const drug = new Drug(req.body);
+        
         let data = await drug.save();
         res.status(200).json({
             message: ':: added ' + data.name
@@ -26,19 +18,8 @@ exports.create = async(req, res, next) => {
 exports.update = async(req, res, next) => {
     try {
         const filter = { _id: req.params.id };
-        const update = {
-            _id: req.body.id,
-            genericName: req.body.genericName,
-            categories: req.body.categoryId,
-            strength: req.body.strength,
-            dosage: req.body.dosage,
-            quantity: req.body.quantity,
-            brandName: req.body.brandName,
-            supplier: req.body.supplierId,
-            manufacturer: req.body.manufacturerId,
-        };
 
-        let data = await Drug.findOneAndUpdate(filter, update, { new: true });
+        let data = await Drug.findOneAndUpdate(filter, req.body, { new: true });
 
         if (!data) {
             throw new Error('Something went wrong.Cannot update data!');
@@ -97,3 +78,25 @@ exports.delete = async(req, res, next) => {
         });
     }
 };
+
+exports.lookup = async(req, res, next) => {
+    try {
+        let drugs = await Drug.find();
+
+        const result = [];
+        drugs.forEach(element => {
+            result.push({ id: element._id, name: element.genericName + ', ' + element.dosage });
+        });
+
+        let count = await Drug.countDocuments();
+
+        res.status(200).json({
+            total: count,
+            results: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}

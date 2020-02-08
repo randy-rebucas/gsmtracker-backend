@@ -5,7 +5,7 @@ const schema = mongoose.Schema({
     categories: { type: mongoose.Schema.Types.ObjectId, ref: 'Categories' },
     strength: { type: String, required: true },
     dosage: { type: String, required: true },
-    quantity: { type: String, default: 0 },
+    quantity: { type: Number, default: 0 },
     brandName: { type: String, default: null },
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' },
     manufacturer: { type: mongoose.Schema.Types.ObjectId, ref: 'Manufacturer' },

@@ -1,4 +1,5 @@
 const Blockchain = require('../models/blockchain');
+const SHA256 = require('crypto-js/sha256');
 
 exports.getChain = async(req, res, next) => {
     try {
@@ -19,14 +20,39 @@ exports.getChain = async(req, res, next) => {
     }
 };
 
-exports.createBlock = async(req, res, next) => {
+exports.create = async(req, res, next) => {
     try {
+        console.log(req.body);
+        /**
+         * Set new patients type doc in Type Collection
+         */
+        const difficulty = 4;
+        const timestamp = Date.parse(new Date().toJSON().slice(0, 10));
+        let nonce = 0;
+
+        const transactions = {
+            setFrom: req.body.from, //Providers public key
+            setTo: req.body.to, //patient public key
+            message: `${req.body.name} new block chained.`, // Provider added a record on Patient
+            records: req.body.transactions
+        };
+
+        const lastBlock = await Blockchain.findOne({}, null, { sort: { _id: -1 }, limit: 1 }).exec();
+        const previousHash = lastBlock ? lastBlock.hash : '0';
+        
+        let hash = SHA256(JSON.stringify(transactions) + timestamp + previousHash + nonce).toString();
+        
+        while (hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+            nonce++;
+            hash = SHA256(JSON.stringify(transactions) + timestamp + previousHash + nonce).toString();
+        }
+
         const newBlock = new Blockchain({
-            timestamp: req.body.timestamp,
-            transactions: req.body.transactions,
-            previousHash: req.body.previousHash,
-            hash: req.body.hash,
-            nonce: req.body.nonce
+            timestamp: timestamp,
+            transactions: transactions,
+            previousHash: previousHash,
+            hash: hash,
+            nonce: nonce
         });
 
         let block = await newBlock.save();

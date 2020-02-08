@@ -9,6 +9,6 @@ const mined = require('../middleware/mined-block');
 
 router.get('', blockchainCtrlr.getChain);
 
-router.post('', mined, blockchainCtrlr.createBlock);
+router.post('', blockchainCtrlr.create); // mined, 
 
 module.exports = router;
