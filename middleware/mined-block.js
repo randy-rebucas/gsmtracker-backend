@@ -1,4 +1,5 @@
 const SHA256 = require('crypto-js/sha256');
+const Blockchain = require('../models/blockchain');
 
 module.exports = async(req, res, next) => {
     try {
@@ -8,15 +9,21 @@ module.exports = async(req, res, next) => {
         const lastBlock = await Blockchain.findOne({}, null, { sort: { _id: -1 }, limit: 1 }).exec();
         const previousHash = lastBlock ? lastBlock.hash : '0';
 
+        // const transactions = {
+        //     from: req.fromAddress, //providers public key
+        //     to: req.toAddress, //patient public key
+        //     message: `${req.privateKey} chained in block.`,
+        //     records: [
+        //         { height: { value: 5 + 5, hasUnit: true, unit: 'cm' } },
+        //         { weight: { value: 1 * 9, hasUnit: true, unit: 'kg' } }, 
+        //         { temperature: { value: 34, hasUnit: true, unit: '°C' } }
+        //     ]
+        // };
         const transactions = {
-            from: req.fromAddress, //providers public key
-            to: req.toAddress, //patient public key
-            message: `${req.privateKey} chained in block.`,
-            records: [
-                { height: { value: 5 + 5, hasUnit: true, unit: 'cm' } },
-                { weight: { value: 1 * 9, hasUnit: true, unit: 'kg' } }, 
-                { temperature: { value: 34, hasUnit: true, unit: '°C' } }
-            ]
+            setFrom: req.body.from, //Providers public key
+            setTo: req.body.to, //patient public key
+            message: `${req.body.name} new block chained.`, // Provider added a record on Patient
+            records: req.body.transactions
         };
 
         let nonce = 0;

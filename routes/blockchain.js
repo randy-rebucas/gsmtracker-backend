@@ -3,12 +3,16 @@ const router = express.Router();
 /**
  * load controller
  */
-const blockchainCtrlr = require('../controllers/blockchain');
+const ctrlr = require('../controllers/blockchain');
 
 const mined = require('../middleware/mined-block');
 
-router.get('', blockchainCtrlr.getChain);
+router.get('', ctrlr.getAll);
 
-router.post('', blockchainCtrlr.create); // mined, 
+router.get('/user/:privateKey', ctrlr.getByUser);
+
+router.get('/:id', ctrlr.getOne);
+
+router.post('', mined, ctrlr.create); // 
 
 module.exports = router;
