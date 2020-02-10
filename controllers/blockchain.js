@@ -68,7 +68,7 @@ exports.getOne = async(req, res, next) => {
 
 exports.getByUser = async(req, res, next) => {
     try {
-        const chains = await Blockchain.find({ 'transactions.setTo': req.params.privateKey }).exec();
+        const chains = await Blockchain.find({ 'transactions.toAddress': req.params.publicKey }).exec();
         if (!chains) {
             throw new Error('Something went wrong.No transactions on this block!');
         }

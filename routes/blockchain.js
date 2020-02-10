@@ -9,7 +9,7 @@ const mined = require('../middleware/mined-block');
 
 router.get('', ctrlr.getAll);
 
-router.get('/user/:privateKey', ctrlr.getByUser);
+router.get('/user/:publicKey', ctrlr.getByUser);
 
 router.get('/:id', ctrlr.getOne);
 

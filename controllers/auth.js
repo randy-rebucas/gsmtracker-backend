@@ -1,63 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const slugify = require('slugify');
-const nodeMailer = require('nodemailer');
-
 const Auth = require('../models/auth');
 const User = require('../models/user');
 const Physicians = require('../models/physician');
-
-const Blockchain = require('../models/blockchain');
-
-var _jade = require('jade');
-var fs = require('fs');
 
 const mail = require('./../helper/mailer');
 
 exports.register = async(req, res, next) => {
     try {
-        /**
-         * Set new patients type doc in Type Collection
-         */
-        // const difficulty = 4;
-        // const timestamp = Date.parse(new Date().toJSON().slice(0, 10));
-        // let nonce = 0;
-
-        // const transactions = {
-        //     from: 'Polycode', //Providers public key
-        //     to: 'Youtube', //patient public key
-        //     message: `${req.privateKey} chained in block.`, // Provider added a record on Patient
-        //     records: [
-        //         { height: { value: 5 + 5, hasUnit: true, unit: 'cm' } },
-        //         { weight: { value: 1 * 9, hasUnit: true, unit: 'kg' } },
-        //         { temperature: { value: 34, hasUnit: true, unit: '°C' } }
-        //     ]
-        // };
-   
-        // const lastBlock = await Blockchain.findOne({}, null, { sort: { _id: -1 }, limit: 1 }).exec();
-        // const previousHash = lastBlock ? lastBlock.hash : '0';
-        // console.log('preveous hash: ' + previousHash);
-
-        // let hash = SHA256(JSON.stringify(transactions) + timestamp + previousHash + nonce).toString();
-        // console.log('first hash: ' + hash);
-
-        // while (hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
-        //     nonce++;
-        //     hash = SHA256(JSON.stringify(transactions) + timestamp + previousHash + nonce).toString();
-        // }
-        // console.log('nonce: '+ nonce);
-        // console.log('new hash: ' + hash);
-
-        // const newBlock = new Blockchain({
-        //     timestamp: req.timestamp,
-        //     transactions: req.transactions,
-        //     previousHash: req.previousHash,
-        //     hash: req.hash,
-        //     nonce: req.nonce
-        // });
-
-        // let block = await newBlock.save();
-        // console.log(block);
         /**
          * check for existing email
          */
@@ -107,17 +57,17 @@ exports.register = async(req, res, next) => {
         }
 
         const context = {
-          email: req.body.email,
-          password: req.body.password,
-          site_name: 'cutsonwheel',
-          site_origin: req.protocol + '://' + req.get('host')
+            email: req.body.email,
+            password: req.body.password,
+            site_name: 'cutsonwheel',
+            site_origin: req.protocol + '://' + req.get('host')
         };
         await mail.sendMail(
-          'welcome',
-          context,
-          'cutsonwheel <admin@cutsonwheel.com>',
-          req.body.email,
-          'New Account Registration'
+            'welcome',
+            context,
+            'cutsonwheel <admin@cutsonwheel.com>',
+            req.body.email,
+            'New Account Registration'
         );
 
         res.status(200).json({
@@ -153,7 +103,7 @@ exports.login = async(req, res, next) => {
         let token = await jwt.sign({
                 email: auth.email,
                 userId: user._id,
-                privateKey: user.privateKey
+                publicKey: user.publicKey
             },
             process.env.JWT_KEY, {}
         );
@@ -162,7 +112,7 @@ exports.login = async(req, res, next) => {
             token: token,
             userEmail: auth.email,
             userId: user._id,
-            privateKey: user.privateKey
+            publicKey: user.publicKey
         });
     } catch (error) {
         res.status(500).json({

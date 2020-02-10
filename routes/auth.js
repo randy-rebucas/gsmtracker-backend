@@ -3,14 +3,14 @@ const router = express.Router();
 /**
  * loads middlewares
  */
-const generateKey = require('../middleware/generate-key');
+const keygenerator = require('../middleware/keygenerator');
 
 /**
  * load controller
  */
 const authController = require('../controllers/auth');
 
-router.post('/register', generateKey, authController.register);
+router.post('/register', keygenerator, authController.register);
 
 router.post('/login', authController.login);
 

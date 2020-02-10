@@ -2,10 +2,9 @@
 const mongoose = require('./../db/index');
 
 const transactions = mongoose.Schema({
-    setFrom: String,
-    setTo: String,
-    message: String,
-    records: [mongoose.Schema.Types.Mixed]
+    fromAddress: String,
+    toAddress: String,
+    data: [mongoose.Schema.Types.Mixed]
 });
 
 const blockchainSchema = mongoose.Schema({
