@@ -52,14 +52,15 @@ exports.getAll = async(req, res, next) => {
     try {
         const pageSize = +req.query.pagesize;
         const currentPage = +req.query.page;
+
         const query = Patient.find().populate('userId');
         if (pageSize && currentPage) {
             query.skip(pageSize * (currentPage - 1)).limit(pageSize);
         }
-        let patients = await query.exec();
-        let patientCount = await Patient.countDocuments();
-        
-        console.log(patients);
+
+        let patients = await query.where('deleted', 0).sort({ 'userId.name.lastname' : 'asc' }).exec();
+        let patientCount = await Patient.countDocuments().where('deleted', 0);
+
         res.status(200).json({
             message: 'Patient fetched successfully!',
             patients: patients,
@@ -92,17 +93,18 @@ exports.getOne = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-        // await Patient.deleteOne({ _id: req.params.id }).exec();
-        let patient = await Patient.findByIdAndRemove(req.params.id).exec();
+        idArray = req.params.ids;
+        ids = idArray.split(',');
+        /**
+         * soft delete patient collection
+         */
+        let patient = await Patient.updateMany({ _id: { $in: ids } }, { $set: { 'deleted': 1 } }, {'multi': true});
         if (!patient) {
-            throw new Error('Something went wrong. Cannot be found id: ' + req.params.id);
+            throw new Error('Error in deleting patient!');
         }
-        const response = {
-            message: "Patient successfully deleted",
-            id: patient.userId
-        };
-        console.log(response);
-        return res.status(200).send(response);
+        res.status(200).json({
+            message: patient.n + ' item deleted successfull!'
+        });
 
     } catch (error) {
         res.status(500).json({

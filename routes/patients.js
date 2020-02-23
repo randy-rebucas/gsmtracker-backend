@@ -14,6 +14,6 @@ router.post('', ctrlr.create);
 
 router.put('/:id', checkAuth, ctrlr.update);
 
-router.delete('/:id', checkAuth, ctrlr.delete);
+router.delete('/:ids', checkAuth, ctrlr.delete);
 
 module.exports = router;
