@@ -34,11 +34,10 @@ exports.create = async(req, res, next) => {
             }]
         });
         let data = await patient.save();
+        console.log(data._id);
         res.status(200).json({
             message: ':: patient added ',
-            patient: {
-                ...data,
-            }
+            patientId: data._id
         });
     } catch (e) {
         res.status(500).json({
