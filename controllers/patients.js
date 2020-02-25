@@ -1,5 +1,29 @@
 const Patient = require('../models/patient');
 
+exports.defaultQuery = (pageSize, currentPage) => {
+    const query = Patient.find().populate('userId');
+    if (pageSize && currentPage) {
+        query.skip(pageSize * (currentPage - 1)).limit(pageSize);
+    }
+    
+    return { 
+        data: query.where('deleted', 0).sort({ 'userId.createdAt' : 'asc' }).exec(),
+        count: Patient.countDocuments().where('deleted', 0)
+    }
+}
+
+exports.filterQuery = (pageSize, currentPage, userId) => {
+    const query = Patient.find({physicians: {$elemMatch: { "userId": userId}}}).populate('userId');
+    if (pageSize && currentPage) {
+        query.skip(pageSize * (currentPage - 1)).limit(pageSize);
+    }
+
+    return {
+        data: query.where('deleted', 0).sort({ 'userId.createdAt' : 'asc' }).exec(),
+        count: Patient.countDocuments({physicians: {$elemMatch: { "userId": userId}}}).where('deleted', 0)
+    }
+}
+
 exports.create = async(req, res, next) => {
     try {
         const patient = new Patient({
@@ -48,23 +72,25 @@ exports.update = async(req, res, next) => {
 };
 
 exports.getAll = async(req, res, next) => {
-
     try {
         const pageSize = +req.query.pagesize;
         const currentPage = +req.query.page;
+        const userId = req.query.userId;
 
-        const query = Patient.find().populate('userId');
-        if (pageSize && currentPage) {
-            query.skip(pageSize * (currentPage - 1)).limit(pageSize);
+        let patients;
+        let counts;
+        if (!userId) {
+            patients = await this.defaultQuery(pageSize, currentPage).data;
+            counts = await this.defaultQuery(pageSize, currentPage).count;
+        } else {
+            patients = await this.filterQuery(pageSize, currentPage, userId).data;
+            counts = await this.filterQuery(pageSize, currentPage, userId).count;
         }
-
-        let patients = await query.where('deleted', 0).sort({ 'userId.name.lastname' : 'asc' }).exec();
-        let patientCount = await Patient.countDocuments().where('deleted', 0);
 
         res.status(200).json({
             message: 'Patient fetched successfully!',
             patients: patients,
-            counts: patientCount
+            counts: counts
         });
 
     } catch (error) {
