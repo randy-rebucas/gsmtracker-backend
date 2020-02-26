@@ -16,4 +16,6 @@ router.put('/:id', checkAuth, ctrlr.update);
 
 router.delete('/:ids', checkAuth, ctrlr.delete);
 
+router.get('/checkPhysicianExist/:physicianId/:patientId', ctrlr.checkPhysician);
+
 module.exports = router;

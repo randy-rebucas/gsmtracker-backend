@@ -5,22 +5,22 @@ exports.defaultQuery = (pageSize, currentPage) => {
     if (pageSize && currentPage) {
         query.skip(pageSize * (currentPage - 1)).limit(pageSize);
     }
-    
-    return { 
-        data: query.where('deleted', 0).sort({ 'userId.createdAt' : 'asc' }).exec(),
+
+    return {
+        data: query.where('deleted', 0).sort({ 'userId.createdAt': 'asc' }).exec(),
         count: Patient.countDocuments().where('deleted', 0)
     }
 }
 
 exports.filterQuery = (pageSize, currentPage, userId) => {
-    const query = Patient.find({physicians: {$elemMatch: { "userId": userId}}}).populate('userId');
+    const query = Patient.find({ physicians: { $elemMatch: { "userId": userId } } }).populate('userId');
     if (pageSize && currentPage) {
         query.skip(pageSize * (currentPage - 1)).limit(pageSize);
     }
 
     return {
-        data: query.where('deleted', 0).sort({ 'userId.createdAt' : 'asc' }).exec(),
-        count: Patient.countDocuments({physicians: {$elemMatch: { "userId": userId}}}).where('deleted', 0)
+        data: query.where('deleted', 0).sort({ 'userId.createdAt': 'asc' }).exec(),
+        count: Patient.countDocuments({ physicians: { $elemMatch: { "userId": userId } } }).where('deleted', 0)
     }
 }
 
@@ -97,7 +97,7 @@ exports.getAll = async(req, res, next) => {
             message: error.message
         });
     }
-    
+
 };
 
 exports.getOne = async(req, res, next) => {
@@ -116,6 +116,27 @@ exports.getOne = async(req, res, next) => {
     }
 };
 
+exports.checkPhysician = async(req, res, next) => {
+    try {
+        let exist = await Patient.find({ physicians: { $elemMatch: { "userId": req.params.physicianId } } }).where('_id', req.params.patientId);
+        if (!exist.length) {
+            let physicians = await Patient.findOneAndUpdate({ _id: req.params.patientId }, {
+                $push: {
+                    physicians: { userId: req.params.physicianId }
+                }
+            });
+            if (!physicians) {
+                throw new Error('Something went wrong.Cannot update Physicians!');
+            }
+        }
+        return true;
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
 exports.delete = async(req, res, next) => {
     try {
         idArray = req.params.ids;
@@ -123,7 +144,7 @@ exports.delete = async(req, res, next) => {
         /**
          * soft delete patient collection
          */
-        let patient = await Patient.updateMany({ _id: { $in: ids } }, { $set: { 'deleted': 1 } }, {'multi': true});
+        let patient = await Patient.updateMany({ _id: { $in: ids } }, { $set: { 'deleted': 1 } }, { 'multi': true });
         if (!patient) {
             throw new Error('Error in deleting patient!');
         }

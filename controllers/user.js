@@ -6,10 +6,6 @@ const Auth = require('../models/auth');
 const User = require('../models/user');
 const Patient = require('../models/patient');
 
-const csv = require('csv-parser');
-const fastcsv = require('fast-csv');
-const fs = require('fs');
-
 exports.getAll = async(req, res, next) => {
     try {
 
@@ -49,10 +45,10 @@ exports.getOne = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-            /**
-             * delete auth credentials
-             */
-        let auth = await Auth.deleteOne({ userId: req.params.userId});
+        /**
+         * delete auth credentials
+         */
+        let auth = await Auth.deleteOne({ userId: req.params.userId });
         if (!auth) {
             throw new Error('Error in deleting auth!');
         }
@@ -89,7 +85,7 @@ exports.create = async(req, res, next) => {
         const newUser = new User(req.body);
         newUser.publicKey = req.publicKey;
         newUser.privateKey = req.privateKey;
-        
+
         let user = await newUser.save();
         if (!user) {
             throw new Error('Something went wrong.Cannot save user data!');
@@ -111,14 +107,11 @@ exports.create = async(req, res, next) => {
 
 exports.updatePhysicians = async(req, res, next) => {
     try {
-        let physicians = await User.findOneAndUpdate(
-            { _id: req.params.userId },
-            {
-                $push: {
-                    physicians: { userId : req.body.physician }
-                }
+        let physicians = await User.findOneAndUpdate({ _id: req.params.userId }, {
+            $push: {
+                physicians: { userId: req.body.physician }
             }
-        );
+        });
         if (!physicians) {
             throw new Error('Something went wrong.Cannot update Physicians!');
         }
@@ -138,7 +131,7 @@ exports.update = async(req, res, next) => {
          * Set common entities on people collection
          */
         const newUser = new User(req.body);
-        
+
         let user = await User.findOneAndUpdate({ _id: req.params.userId }, newUser, { new: true });
         if (!user) {
             throw new Error('Something went wrong.Cannot update user data!');
