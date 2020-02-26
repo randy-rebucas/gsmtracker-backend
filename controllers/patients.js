@@ -1,4 +1,5 @@
 const Patient = require('../models/patient');
+const User = require('../models/user');
 
 exports.defaultQuery = (pageSize, currentPage) => {
     const query = Patient.find().populate('userId');
@@ -130,6 +131,21 @@ exports.checkPhysician = async(req, res, next) => {
             }
         }
         return true;
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+exports.getByKey = async(req, res, next) => {
+    try {
+        let user = await User.findOne({ publicKey: req.params.publicKey });
+        if (!user) {
+            throw new Error('Something went wrong. Cannot find block key: ' + req.params.publicKey);
+        }
+
+        res.status(200).json(user);
     } catch (error) {
         res.status(500).json({
             message: error.message

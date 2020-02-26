@@ -18,4 +18,6 @@ router.delete('/:ids', checkAuth, ctrlr.delete);
 
 router.get('/checkPhysicianExist/:physicianId/:patientId', ctrlr.checkPhysician);
 
+router.get('/getByKey/:publicKey', ctrlr.getByKey);
+
 module.exports = router;
