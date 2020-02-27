@@ -83,3 +83,29 @@ exports.delete = async(req, res, next) => {
         });
     }
 };
+
+exports.updateSetting = async() => {
+    try {
+        let settings = await Model.findOneAndUpdate({ _id: req.body.id }, {
+            $set: {
+                general: {
+                    name: req.body.name,
+                    owner: req.body.owner,
+                    email: req.body.email,
+                    nobreak: req.body.nobreak,
+                    addresses: req.body.addresses,
+                    phones: req.body.phones,
+                    hours: req.body.hours,
+                }
+            }
+        });
+
+        if (!settings) {
+            throw new Error('Something went wrong.Cannot update settings!');
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}

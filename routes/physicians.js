@@ -16,4 +16,6 @@ router.put('/:id', checkAuth, ctrlr.update);
 
 router.delete('/:id', checkAuth, ctrlr.delete);
 
+router.put('/updateSetting/:id', ctrlr.updateSetting);
+
 module.exports = router;

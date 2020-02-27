@@ -1,18 +1,9 @@
 const mongoose = require('./../db/index');
 
-const recordSchema = mongoose.Schema({
-    recordType: String,
-    recordOptions: [{
-        isExpanded: { type: Boolean, default: false },
-        isRemove: { type: Boolean, default: false }
-    }]
-});
-
 const settingSchema = mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     general: [{
         owner: { type: String, required: true },
-        practice: { type: String },
         name: { type: String, required: true },
         addresses: [{
             address1: { type: String }, // street address
@@ -23,9 +14,6 @@ const settingSchema = mongoose.Schema({
             country: { type: String }
         }],
         email: { type: String },
-        prc: { type: String },
-        ptr: { type: String },
-        s2: { type: String },
         nobreak: { type: Boolean },
         phones: [{
             contact: { type: String }
@@ -47,8 +35,7 @@ const settingSchema = mongoose.Schema({
     subscription: [{
         plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Plan', default: null },
         subscriptionDate: Date
-    }],
-    records: [recordSchema]
+    }]
 });
 
 
