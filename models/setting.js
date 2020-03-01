@@ -1,20 +1,13 @@
 const mongoose = require('./../db/index');
 
-const recordSchema = mongoose.Schema({
-    recordType: String,
-    recordOptions: [{
-        isExpanded: { type: Boolean, default: false },
-        isRemove: { type: Boolean, default: false }
-    }]
-});
-
 const settingSchema = mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    general: [{
-        owner: { type: String, required: true },
-        practice: { type: String },
-        name: { type: String, required: true },
-        addresses: [{
+    rxHeaderOption: { type: Boolean },
+    rxFooterOption: { type: Boolean },
+    prescription: {
+        rxTitle: { type: String },
+        rxSubTitle: { type: String },
+        rxAddresses: [{
             address1: { type: String }, // street address
             address2: { type: String }, // street address line 2
             city: { type: String },
@@ -22,33 +15,18 @@ const settingSchema = mongoose.Schema({
             postalCode: { type: Number },
             country: { type: String }
         }],
-        email: { type: String },
-        prc: { type: String },
-        ptr: { type: String },
-        s2: { type: String },
-        nobreak: { type: Boolean },
-        phones: [{
+        rxNoNoonBreak: { type: Boolean },
+        rxPhones: [{
             contact: { type: String }
         }],
-        hours: [{
+        rxHours: [{
             morningOpen: { type: String },
             afternoonClose: { type: String }
         }]
-    }],
-    notification: [{
-        deletedPatient: Boolean,
-        createdAppointment: Boolean,
-        cancelAppointment: Boolean,
-        sentMessage: Boolean,
-        newFeatures: Boolean,
-        newUpdates: Boolean,
-        subscriptionPlan: Boolean
-    }],
-    subscription: [{
-        plan: { type: mongoose.Schema.Types.ObjectId, ref: 'Plan', default: null },
-        subscriptionDate: Date
-    }],
-    records: [recordSchema]
+    },
+    language: { type: String },
+    appointments: { type: Boolean },
+    updates: { type: Boolean }
 });
 
 

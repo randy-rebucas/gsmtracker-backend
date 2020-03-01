@@ -146,6 +146,32 @@ exports.update = async(req, res, next) => {
 
 };
 
+exports.setSetting = async(req, res, next) => {
+    try {
+        const userSetting = new User(req.body);
+
+        let settings = await Setting.findOneAndUpdate(
+            { _id: req.params.userId },
+            {
+                $set: {
+                    userSetting
+                }
+            }
+        );
+
+        if (!settings) {
+            throw new Error('Something went wrong.Cannot update settings!');
+        }
+
+        res.status(200).json({ message: 'General settings update successful!' });
+
+    } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+};
+
 // ==================
 exports.getNewUser = async(req, res, next) => {
     try {
