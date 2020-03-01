@@ -97,16 +97,14 @@ exports.setSetting = async(req, res, next) => {
                 }
             }, { new: true }
         );
-
         if (!settings) {
             throw new Error('Something went wrong.Cannot update settings!');
         }
 
-        res.status(200).json({ message: 'General settings update successful!' });
-
-    } catch (e) {
+    } catch (error) {
         res.status(500).json({
-            message: e.message
+            message: error.message
         });
     }
-};
+}
+
