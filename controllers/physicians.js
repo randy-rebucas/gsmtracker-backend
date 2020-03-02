@@ -83,28 +83,3 @@ exports.delete = async(req, res, next) => {
         });
     }
 };
-
-exports.setSetting = async(req, res, next) => {
-    try {
-
-        const newSetting = new Model(req.body);
-
-        let settings = await Model.findOneAndUpdate(
-            { _id: req.params.userId },
-            {
-                $set: {
-                    newSetting
-                }
-            }, { new: true }
-        );
-        if (!settings) {
-            throw new Error('Something went wrong.Cannot update settings!');
-        }
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
-}
-
