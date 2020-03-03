@@ -1,13 +1,12 @@
-const Model = require('../models/physician');
+const Physician = require('../models/physician');
 
 exports.create = async(req, res, next) => {
     try {
-        const model = new Model({
-            name: req.body.name
-        });
-        let data = await model.save();
+        const physician = new Physician(req.body);
+        let data = await physician.save();
         res.status(200).json({
-            message: ':: added ' + data.name
+            message: ':: physician added ',
+            physicianId: data._id
         });
     } catch (e) {
         res.status(500).json({
@@ -20,11 +19,11 @@ exports.update = async(req, res, next) => {
     try {
         const filter = { _id: req.params.id };
         const update = {
-            _id: req.body.typeId,
-            name: req.body.name
+            _id: req.body.id,
+            description: req.body.description
         };
 
-        let data = await Model.findOneAndUpdate(filter, update, { new: true });
+        let data = await Physician.findOneAndUpdate(filter, req.body, { new: true });
 
         if (!data) {
             throw new Error('Something went wrong.Cannot update data!');
@@ -42,7 +41,7 @@ exports.update = async(req, res, next) => {
 
 exports.getAll = async(req, res, next) => {
     try {
-        let data = await Model.find()
+        let data = await Physician.find()
             .sort({ '_id': 'asc' })
             .exec();
 
@@ -58,7 +57,7 @@ exports.getAll = async(req, res, next) => {
 
 exports.getOne = async(req, res, next) => {
     try {
-        let data = await Model.findById(req.params.id).exec();
+        let data = await Physician.findOne({ userId: req.params.id }).exec();
         if (!data) {
             throw new Error('Something went wrong. Cannot be found id: ' + req.params.id);
         }
@@ -73,7 +72,7 @@ exports.getOne = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-        await Model.deleteOne({ _id: req.params.id }).exec();
+        await Physician.deleteOne({ _id: req.params.id }).exec();
 
         res.status(200).json({ message: 'Deletion successfull!' });
 

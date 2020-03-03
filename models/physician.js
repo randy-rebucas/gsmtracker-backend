@@ -1,8 +1,8 @@
 const mongoose = require('../db/index');
 
 const practiceSchema = mongoose.Schema({
-    title: { type: String, default: null },
-    year: { type: Number, default: null }
+    practice: { type: String, default: null },
+    practiceYearExperience: { type: Number, default: null }
 });
 
 const schema = mongoose.Schema({
@@ -12,6 +12,7 @@ const schema = mongoose.Schema({
     prc: { type: String, default: null },
     ptr: { type: String, default: null },
     s2: { type: String, default: null },
+    professionalFee: { type: String },
     isVerified: { type: Boolean, default: false }
 });
 

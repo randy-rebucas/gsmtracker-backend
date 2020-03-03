@@ -119,8 +119,8 @@ exports.getOne = async(req, res, next) => {
 
 exports.checkPhysician = async(req, res, next) => {
     try {
-        let exist = await Patient.find({ physicians: { $elemMatch: { "userId": req.params.physicianId } } }).where('_id', req.params.patientId);
-        if (!exist.length) {
+        let isExisting = await Patient.find({ physicians: { $elemMatch: { "userId": req.params.physicianId } } }).where('_id', req.params.patientId);
+        if (!isExisting.length) {
             let physicians = await Patient.findOneAndUpdate({ _id: req.params.patientId }, {
                 $push: {
                     physicians: { userId: req.params.physicianId }
@@ -130,7 +130,11 @@ exports.checkPhysician = async(req, res, next) => {
                 throw new Error('Something went wrong.Cannot update Physicians!');
             }
         }
-        return true;
+        // return true;
+        res.status(200).json({
+            message: 'Physician added to network!',
+            existing: (!isExisting.length) ? false : true
+        });
     } catch (error) {
         res.status(500).json({
             message: error.message
