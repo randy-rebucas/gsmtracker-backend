@@ -142,6 +142,39 @@ exports.checkPhysician = async(req, res, next) => {
     }
 }
 
+exports.setLabel = async(req, res, next) => {
+    try {
+        const labels = [];
+        const paramLabel = req.params.labels.split(',');
+        paramLabel.forEach(label => {
+            labels.push({labelId: label});
+        });
+
+        let label = await Patient.findOneAndUpdate(
+            { _id: req.params.patientId },
+            {
+                $set: { 
+                    'labels': labels 
+                }
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+
+        if (!label) {
+            throw new Error('Something went wrong.Cannot set label!');
+        }
+
+        res.status(200).json({
+            message: 'label set updated!'
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
 exports.getByKey = async(req, res, next) => {
     try {
         let user = await User.findOne({ publicKey: req.params.publicKey });
