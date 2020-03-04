@@ -2,21 +2,23 @@ const Upload = require('../models/upload');
 
 exports.create = async(req, res, next) => {
     try {
-        let uploadCheck = await Upload.findOne({ sourceId: req.body.origId });
+        
+        let file = await Upload.findOneAndUpdate(
+            { sourceId: req.body.origId },
+            {
+                $set: { 
+                    'image': req.body.origImage 
+                }
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
 
-        const newUpload = new Upload({
-            sourceId: req.body.origId,
-            image: req.body.origImage
-        });
-
-        if (uploadCheck) {
-            await Upload.updateOne({ sourceId: req.body.origId }, { '$set': { 'image': req.body.origImage } });
-        } else{
-            await newUpload.save();
+        if (!file) {
+            throw new Error('Something went wrong.Cannot upload data!');
         }
 
         res.status(200).json({
-            imagePath: newUpload.image,
+            imagePath: file.image,
             message: 'image updated!'
         });
 
