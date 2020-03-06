@@ -1,8 +1,14 @@
 const Patient = require('../models/patient');
 const User = require('../models/user');
 
-exports.defaultQuery = (pageSize, currentPage) => {
+exports.defaultQuery = (pageSize, currentPage, labelId) => {
     const query = Patient.find().populate('userId');
+
+    if (labelId) {
+        query.elemMatch('labels', function (elem) {
+            elem.where({ labelId: labelId })
+        })
+    }
     if (pageSize && currentPage) {
         query.skip(pageSize * (currentPage - 1)).limit(pageSize);
     }
@@ -13,8 +19,14 @@ exports.defaultQuery = (pageSize, currentPage) => {
     }
 }
 
-exports.filterQuery = (pageSize, currentPage, userId) => {
+exports.filterQuery = (pageSize, currentPage, userId, labelId) => {
     const query = Patient.find({ physicians: { $elemMatch: { "userId": userId } } }).populate('userId');
+    
+    if (labelId) {
+        query.elemMatch('labels', function (elem) {
+            elem.where({ labelId: labelId })
+        })
+    }
     if (pageSize && currentPage) {
         query.skip(pageSize * (currentPage - 1)).limit(pageSize);
     }
@@ -76,15 +88,16 @@ exports.getAll = async(req, res, next) => {
         const pageSize = +req.query.pagesize;
         const currentPage = +req.query.page;
         const userId = req.query.userId;
+        const labelId = req.query.labelId;
 
         let patients;
         let counts;
         if (!userId) {
-            patients = await this.defaultQuery(pageSize, currentPage).data;
-            counts = await this.defaultQuery(pageSize, currentPage).count;
+            patients = await this.defaultQuery(pageSize, currentPage, labelId).data;
+            counts = await this.defaultQuery(pageSize, currentPage, labelId).count;
         } else {
-            patients = await this.filterQuery(pageSize, currentPage, userId).data;
-            counts = await this.filterQuery(pageSize, currentPage, userId).count;
+            patients = await this.filterQuery(pageSize, currentPage, userId, labelId).data;
+            counts = await this.filterQuery(pageSize, currentPage, userId, labelId).count;
         }
 
         res.status(200).json({
