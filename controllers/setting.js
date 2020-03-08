@@ -2,7 +2,6 @@ const Setting = require('../models/setting');
 
 exports.update = async(req, res, next) => {
     try {
-        console.log(req.body);
         let settings = await Setting.findOneAndUpdate(
             { userId: req.params.userId },
             {
@@ -15,7 +14,10 @@ exports.update = async(req, res, next) => {
             throw new Error('Something went wrong.Cannot update settings!');
         }
 
-        res.status(200).json({ message: 'Settings update successful!' });
+        res.status(200).json({ 
+            message: 'Settings update successful!',
+            setting: settings
+        });
 
     } catch (e) {
         res.status(500).json({
