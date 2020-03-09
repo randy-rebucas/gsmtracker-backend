@@ -17,20 +17,13 @@ exports.create = async(req, res, next) => {
 
 exports.update = async(req, res, next) => {
     try {
-        const filter = { _id: req.params.id };
-        const update = {
-            _id: req.body.id,
-            description: req.body.description
-        };
 
-        let data = await Physician.findOneAndUpdate(filter, req.body, { new: true });
+        let data = await Physician.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
 
         if (!data) {
             throw new Error('Something went wrong.Cannot update data!');
         }
-        res.status(200).json({
-            message: 'type update successful!'
-        });
+        res.status(200).json(data);
 
     } catch (e) {
         res.status(500).json({

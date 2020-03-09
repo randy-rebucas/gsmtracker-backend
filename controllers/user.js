@@ -130,13 +130,11 @@ exports.update = async(req, res, next) => {
         /**
          * Set common entities on people collection
          */
-        const newUser = new User(req.body);
-
-        let user = await User.findOneAndUpdate({ _id: req.params.userId }, newUser, { new: true });
+        let user = await User.findOneAndUpdate({ _id: req.params.userId }, req.body, { new: true });
         if (!user) {
             throw new Error('Something went wrong.Cannot update user data!');
         }
-        res.status(200).json({ message: user.firstname + ' Update successful!' });
+        res.status(200).json(user);
 
     } catch (error) {
         res.status(500).json({
