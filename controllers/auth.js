@@ -81,6 +81,57 @@ exports.register = async(req, res, next) => {
     }
 }
 
+exports.update = async(req, res, next) => {
+    try {
+        /**
+         * Find email on auth collection
+         */
+        let auth = await Auth.findOne({ email: req.body.email });
+        /**
+         * compare password
+         */
+        let decrypted = await bcrypt.compare(req.body.oldPass, auth.password);
+        if (!decrypted) {
+            throw new Error('Something went wrong. entered password does not match old password!');
+        }
+        let update;
+        if (req.body.targetField != 'email') {
+            const salt = await bcrypt.genSalt(10);
+            const hash = await bcrypt.hash(req.body.newPass, salt);
+
+            update = {
+                _id: auth._id,
+                password: hash
+            };
+        } else {
+            let checkEmail = await Auth.findOne({ email: req.body.newEmail });
+            if (checkEmail) {
+                throw new Error('Something went wrong. Email is in used!');
+            }
+
+            update = {
+                _id: auth._id,
+                email: req.body.newEmail
+            };
+        }
+        
+
+        let data = await Auth.findOneAndUpdate({ _id: auth._id }, update, { new: true });
+        if (!data) {
+            throw new Error('Something went wrong. Failed to update password!');
+        }
+
+        res.status(200).json({
+            message: 'Password changed successfully!',
+            state: true
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
 exports.login = async(req, res, next) => {
     try {
         /**

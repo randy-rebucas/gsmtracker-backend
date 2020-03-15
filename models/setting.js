@@ -3,6 +3,7 @@ const mongoose = require('./../db/index');
 const settingSchema = mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     clinicname: { type: String },
+    clinicowner: { type: String },
     rxHeaderOption: { type: Boolean },
     rxFooterOption: { type: Boolean },
     prescription: {

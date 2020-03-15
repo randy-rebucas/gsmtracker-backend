@@ -47,7 +47,30 @@ exports.create = async(req, res, next) => {
             }]
         });
         let data = await patient.save();
-        console.log(data._id);
+
+        res.status(200).json({
+            message: ':: patient added ',
+            patientId: data._id
+        });
+    } catch (e) {
+        res.status(500).json({
+            message: e.message
+        });
+    }
+};
+
+exports.createBatch = async(req, res, next) => {
+    try {
+        let data = await Patient.insertMany([
+            {
+                userId: req.body.userId,
+                description: 'a person receiving or registered to receive medical treatment.',
+                physicians: [{
+                    userId: req.body.physician
+                }]
+            }
+        ]);
+
         res.status(200).json({
             message: ':: patient added ',
             patientId: data._id

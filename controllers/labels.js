@@ -39,13 +39,15 @@ exports.update = async(req, res, next) => {
 };
 
 exports.getAll = async(req, res, next) => {
+    const labelOwner = req.query.labelOwner;
+
     try {
-        let data = await Model.find()
+        let data = await Model.find({userId: labelOwner})
             .sort({ '_id': 'asc' })
             .exec();
 
             res.status(200).json({
-                message: 'label update successful!',
+                message: 'label fetach successful!',
                 labels: data
             });
     } catch (e) {
