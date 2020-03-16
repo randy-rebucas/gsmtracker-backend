@@ -28,6 +28,7 @@ var drugsRouter = require('./routes/drugs');
 var categoriesRouter = require('./routes/categories');
 var supplierRouter = require('./routes/supplier');
 var manufacturerRouter = require('./routes/manufacturer');
+var accessRouter = require('./routes/access');
 
 var app = express();
 
@@ -74,6 +75,7 @@ app.use('/api/drugs', drugsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/supplier', supplierRouter);
 app.use('/api/manufacturer', manufacturerRouter);
+app.use('/api/access', accessRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next(createError(404));
