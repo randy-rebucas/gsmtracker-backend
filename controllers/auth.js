@@ -149,16 +149,17 @@ exports.login = async(req, res, next) => {
         if (!decrypted) {
             throw new Error('Something went wrong. Incorrect password!');
         }
-
+        // U2oq0FxEq
         let user;
         switch (req.body.role) {
             case 'physicians':
-                user = await Physicians.findOne({ userId: auth.userId }).populate('userId');
+                user = await Physicians.findOne({ userId: auth.userId }).populate('userId').exec();
                 break;
             default: // patients
-                user = await Patient.findOne({ userId: auth.userId }).populate('userId');    
+                user = await Patient.findOne({ userId: auth.userId }).populate('userId').exec();   
                 break;
         }
+
         if (!user) {
             throw new Error('Something went wrong. Cannot find email: ' + req.body.email + ' on '+ req.body.role +' list!');
         }
@@ -210,6 +211,7 @@ exports.generate = async(req, res, next) => {
             throw new Error('Something went wrong. Email is in used!');
         }
 
+        let patient = await Patient.findById(req.body.id);
         /**
          * Set login credentials in auth collection
          */
@@ -218,7 +220,7 @@ exports.generate = async(req, res, next) => {
         const authCredentials = new Auth({
             email: req.body.email,
             password: hash,
-            userId: req.body.id
+            userId: patient.userId
         });
         let auth = await authCredentials.save();
         if (!auth) {
