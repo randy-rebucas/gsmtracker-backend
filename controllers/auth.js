@@ -171,3 +171,69 @@ exports.login = async(req, res, next) => {
         });
     }
 }
+
+exports.getOne = async(req, res, next) => {
+    try {
+
+        let data = await Auth.findOne({userId: req.params.id}).exec();
+
+        res.status(200).json({
+            auth: data,
+            status: (!data) ? false : true
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+exports.generate = async(req, res, next) => {
+    try {
+        /**
+         * check for existing email
+         */
+        let authCheck = await Auth.findOne({ email: req.body.email });
+        if (authCheck) {
+            throw new Error('Something went wrong. Email is in used!');
+        }
+
+        /**
+         * Set login credentials in auth collection
+         */
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(req.body.password, salt);
+        const authCredentials = new Auth({
+            email: req.body.email,
+            password: hash,
+            userId: req.body.id
+        });
+        let auth = await authCredentials.save();
+        if (!auth) {
+            throw new Error('Something went wrong.Cannot save login credentials!');
+        }
+
+        const context = {
+            email: req.body.email,
+            password: req.body.password,
+            site_name: 'cutsonwheel',
+            site_origin: req.protocol + '://' + req.get('host')
+        };
+        await mail.sendMail(
+            'welcome',
+            context,
+            'cutsonwheel <admin@cutsonwheel.com>',
+            req.body.email,
+            'Auth credential generated'
+        );
+
+        res.status(200).json({
+            message: 'Generates successfully!'
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
