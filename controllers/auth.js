@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const Auth = require('../models/auth');
 const User = require('../models/user');
 const Physicians = require('../models/physician');
+const Patient = require('../models/patient');
 
 const mail = require('./../helper/mailer');
 
@@ -149,12 +150,22 @@ exports.login = async(req, res, next) => {
             throw new Error('Something went wrong. Incorrect password!');
         }
 
-        let user = await User.findOne({ _id: auth.userId });
-
+        let user;
+        switch (req.body.role) {
+            case 'physicians':
+                user = await Physicians.findOne({ userId: auth.userId }).populate('userId');
+                break;
+            default: // patients
+                user = await Patient.findOne({ userId: auth.userId }).populate('userId');    
+                break;
+        }
+        if (!user) {
+            throw new Error('Something went wrong. Cannot find email: ' + req.body.email + ' on '+ req.body.role +' list!');
+        }
         let token = await jwt.sign({
                 email: auth.email,
-                userId: user._id,
-                publicKey: user.publicKey
+                userId: user.userId._id,
+                publicKey: user.userId.publicKey
             },
             process.env.JWT_KEY, {}
         );
@@ -162,8 +173,8 @@ exports.login = async(req, res, next) => {
         res.status(200).json({
             token: token,
             userEmail: auth.email,
-            userId: user._id,
-            publicKey: user.publicKey
+            userId: user.userId._id,
+            publicKey: user.userId.publicKey
         });
     } catch (error) {
         res.status(500).json({
