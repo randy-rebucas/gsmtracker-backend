@@ -14,6 +14,11 @@ var indexRouter = require('./routes/index');
 var blockchainRouter = require('./routes/blockchain');
 var authRouter = require('./routes/auth');
 var userRouter = require('./routes/users');
+var ownerRouter = require('./routes/owners');
+var customerRouter = require('./routes/customers');
+var techniciansRouter = require('./routes/technicians');
+var repairsRouter = require('./routes/repairs');
+
 var patientRouter = require('./routes/patients');
 var physicianRouter = require('./routes/physicians');
 var labelsRouter = require('./routes/labels');
@@ -61,6 +66,11 @@ app.use('/', indexRouter);
 app.use('/api/blockchain', blockchainRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use('/api/owners', ownerRouter);
+app.use('/api/customers', customerRouter);
+app.use('/api/technicians', techniciansRouter);
+app.use('/api/repairs', repairsRouter);
+
 app.use('/api/patients', patientRouter);
 app.use('/api/physicians', physicianRouter);
 app.use('/api/labels', labelsRouter);

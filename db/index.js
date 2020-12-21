@@ -15,9 +15,9 @@ const options = {
     family: null // Use IPv4, skip trying IPv6
 };
 mongoose.connect(
-    'mongodb+srv://myclinicsoft:' +
+    'mongodb+srv://randyr:' +
     process.env.MONGO_ATLAS_PW +
-    '@main-cndu1.mongodb.net/myclinicsoft?retryWrites=true&w=majority',
+    '@cluster0-ikxbg.mongodb.net/test?retryWrites=true&w=majority',
     options
 );
 const db = mongoose.connection;
@@ -28,3 +28,5 @@ db.once("open", () => {
     console.log("> successfully opened the database");
 });
 module.exports = mongoose;
+
+// rebucasrandy1986@gmail.com

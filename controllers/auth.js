@@ -2,8 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Auth = require('../models/auth');
 const User = require('../models/user');
-const Physicians = require('../models/physician');
-const Patient = require('../models/patient');
+const Owner = require('../models//owner');
 
 const mail = require('./../helper/mailer');
 
@@ -48,28 +47,28 @@ exports.register = async(req, res, next) => {
             throw new Error('Something went wrong.Cannot save login credentials!');
         }
 
-        const newPhysician = new Physicians({
+        const newOwner = new Owner({
             userId: user._id,
-            description: 'a person qualified to practice medicine.'
+            description: 'a person own a shop.'
         });
-        let physician = await newPhysician.save();
-        if (!physician) {
-            throw new Error('Something went wrong.Cannot save physician data!');
+        let owner = await newOwner.save();
+        if (!owner) {
+            throw new Error('Something went wrong.Cannot save owner data!');
         }
 
-        const context = {
-            email: req.body.email,
-            password: req.body.password,
-            site_name: 'cutsonwheel',
-            site_origin: req.protocol + '://' + req.get('host')
-        };
-        await mail.sendMail(
-            'welcome',
-            context,
-            'cutsonwheel <admin@cutsonwheel.com>',
-            req.body.email,
-            'New Account Registration'
-        );
+        // const context = {
+        //     email: req.body.email,
+        //     password: req.body.password,
+        //     site_name: 'cutsonwheel',
+        //     site_origin: req.protocol + '://' + req.get('host')
+        // };
+        // await mail.sendMail(
+        //     'welcome',
+        //     context,
+        //     'cutsonwheel <admin@cutsonwheel.com>',
+        //     req.body.email,
+        //     'New Account Registration'
+        // );
 
         res.status(200).json({
             message: 'Registered successfully!',
@@ -150,18 +149,9 @@ exports.login = async(req, res, next) => {
             throw new Error('Something went wrong. Incorrect password!');
         }
         // U2oq0FxEq
-        let user;
-        switch (req.body.role) {
-            case 'physicians':
-                user = await Physicians.findOne({ userId: auth.userId }).populate('userId').exec();
-                break;
-            default: // patients
-                user = await Patient.findOne({ userId: auth.userId }).populate('userId').exec();   
-                break;
-        }
-
+        let user = await Owner.findOne({ userId: auth.userId }).populate('userId').exec();   
         if (!user) {
-            throw new Error('Something went wrong. Cannot find email: ' + req.body.email + ' on '+ req.body.role +' list!');
+            throw new Error('Something went wrong. Cannot find email: ' + req.body.email + ' list!');
         }
         let token = await jwt.sign({
                 email: auth.email,
