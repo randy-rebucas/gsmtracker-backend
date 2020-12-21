@@ -2,7 +2,7 @@ const express = require('express');
 
 const ctrlr = require('../controllers/owners');
 
-const checkAuth = require('../middleware/check-auth');
+const authorization = require('../middleware/authorization');
 
 const router = express.Router();
 
@@ -12,8 +12,8 @@ router.get('/:id', ctrlr.getOne);
 
 router.post('', ctrlr.create);
 
-router.put('/:id', checkAuth, ctrlr.update);
+router.put('/:id', authorization, ctrlr.update);
 
-router.delete('/:id', checkAuth, ctrlr.delete);
+router.delete('/:id', authorization, ctrlr.delete);
 
 module.exports = router;
