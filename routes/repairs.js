@@ -16,7 +16,7 @@ router.put('/:id', authorization, ctrlr.update);
 
 router.delete('/:ids', authorization, ctrlr.delete);
 
-router.get('/checkPhysicianExist/:physicianId/:patientId', ctrlr.checkPhysician);
+router.get('/checkOwnerExist/:ownerId/:repairId', ctrlr.checkOwner);
 
 router.get('/setLabel/:repairId/:labels', ctrlr.setLabel);
 

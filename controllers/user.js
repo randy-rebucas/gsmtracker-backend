@@ -90,7 +90,7 @@ exports.create = async(req, res, next) => {
 
         res.status(200).json({
             message: 'User added successfully',
-            users: {
+            user: {
                 ...user,
             },
             id: user._id

@@ -23,7 +23,7 @@ const schema = mongoose.Schema({
     },
     labels: [labelSchema],
     complaint: { type: String, required: true },
-    technician: [technicianSchema],
+    technicians: [technicianSchema],
     actionTaken: { type: String, required: true },
     amountPaid: { type: Number, required: true },
     warranty: { type: String, default: 'no-warranty' },
