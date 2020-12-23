@@ -6,7 +6,13 @@ exports.getAll = async(req, res, next) => {
         const currentPage = +req.query.page;
         const userId = req.query.userId;
         const labelId = req.query.labelId;
-        const query = Repair.find().populate('customerId');
+        const query = Repair.find()
+            .populate({
+                path: 'customerId',
+                populate: {
+                    path: 'userId'
+                }
+            });
         if (labelId) {
             query.elemMatch('labels', function(elem) {
                 elem.where({ labelId: labelId })
@@ -21,8 +27,6 @@ exports.getAll = async(req, res, next) => {
             query.skip(pageSize * (currentPage - 1)).limit(pageSize);
         }
         const repairs = await query.where('deleted', 0).sort({ 'createdAt': 'asc' }).exec();
-        console.log(repairs);
-        console.log(repairs.length);
 
         res.status(200).json({
             message: 'Repair fetched successfully!',
@@ -75,7 +79,12 @@ exports.update = async(req, res, next) => {
 exports.getOne = async(req, res, next) => {
     try {
 
-        let data = await Repair.findById(req.params.id).populate('customerId').exec();
+        let data = await Repair.findById(req.params.id).populate({
+            path: 'customerId',
+            populate: {
+                path: 'userId'
+            }
+        }).exec();
         if (!data) {
             throw new Error('Something went wrong. Cannot be found id: ' + req.params.id);
         }

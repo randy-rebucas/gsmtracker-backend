@@ -8,10 +8,6 @@ const ownerSchema = mongoose.Schema({
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Owner' }
 });
 
-const technicianSchema = mongoose.Schema({
-    technicianId: { type: mongoose.Schema.Types.ObjectId, ref: 'Technician' }
-});
-
 const schema = mongoose.Schema({
     owners: [ownerSchema],
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' },
@@ -23,7 +19,7 @@ const schema = mongoose.Schema({
     },
     labels: [labelSchema],
     complaint: { type: String, required: true },
-    technicians: [technicianSchema],
+    technician: { type: mongoose.Schema.Types.ObjectId, ref: 'Technician' },
     actionTaken: { type: String, required: true },
     amountPaid: { type: Number, required: true },
     warranty: { type: String, default: 'no-warranty' },
