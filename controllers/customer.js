@@ -50,7 +50,7 @@ exports.getAll = async(req, res, next) => {
 
 exports.getOne = async(req, res, next) => {
     try {
-        let data = await Customer.findOne({ userId: req.params.id }).exec();
+        let data = await Customer.findOne({ _id: req.params.id }).populate('userId').exec();
         if (!data) {
             throw new Error('Something went wrong. Cannot be found id: ' + req.params.id);
         }
@@ -75,3 +75,23 @@ exports.delete = async(req, res, next) => {
         });
     }
 };
+
+exports.lookup = async(req, res, next) => {
+    try {
+        let customers = await Customer.find().populate('userId');
+
+        const result = [];
+        customers.forEach(element => {
+            result.push({ id: element._id, name: element.userId.name.firstname + ', ' + element.userId.name.lastname });
+        });
+
+        res.status(200).json({
+            total: customers.length,
+            results: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}

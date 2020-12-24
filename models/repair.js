@@ -11,6 +11,7 @@ const ownerSchema = mongoose.Schema({
 const schema = mongoose.Schema({
     owners: [ownerSchema],
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' },
+    technicianId: { type: mongoose.Schema.Types.ObjectId, ref: 'Technician' },
     phoneInfo: {
         brand: { type: String, required: true },
         model: { type: String, required: true },
@@ -19,7 +20,6 @@ const schema = mongoose.Schema({
     },
     labels: [labelSchema],
     complaint: { type: String, required: true },
-    technician: { type: mongoose.Schema.Types.ObjectId, ref: 'Technician' },
     actionTaken: { type: String, required: true },
     amountPaid: { type: Number, required: true },
     warranty: { type: String, default: 'no-warranty' },

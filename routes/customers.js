@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.get('', ctrlr.getAll);
 
+router.get('/lookup', ctrlr.lookup);
+
 router.get('/:id', ctrlr.getOne);
 
 router.post('', ctrlr.create);

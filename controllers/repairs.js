@@ -12,6 +12,12 @@ exports.getAll = async(req, res, next) => {
                 populate: {
                     path: 'userId'
                 }
+            })
+            .populate({
+                path: 'technicianId',
+                populate: {
+                    path: 'userId'
+                }
             });
         if (labelId) {
             query.elemMatch('labels', function(elem) {
