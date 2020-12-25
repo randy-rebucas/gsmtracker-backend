@@ -34,13 +34,19 @@ exports.update = async(req, res, next) => {
 
 exports.getAll = async(req, res, next) => {
     try {
+        const ownerId = req.query.ownerId;
         let data = await Technician.find()
+            .populate('userId')
+            .where('ownerId', ownerId)
             .sort({ '_id': 'asc' })
             .exec();
 
         res.status(200).json({
-            data: data
+            message: 'Technician fetched successfully!',
+            technicians: data,
+            counts: data.length
         });
+
     } catch (e) {
         res.status(500).json({
             message: e.message

@@ -34,12 +34,17 @@ exports.update = async(req, res, next) => {
 
 exports.getAll = async(req, res, next) => {
     try {
+        const ownerId = req.query.ownerId;
         let data = await Customer.find()
+            .populate('userId')
+            .where('ownerId', ownerId)
             .sort({ '_id': 'asc' })
             .exec();
 
         res.status(200).json({
-            data: data
+            message: 'Customer fetched successfully!',
+            customers: data,
+            counts: data.length
         });
     } catch (e) {
         res.status(500).json({
