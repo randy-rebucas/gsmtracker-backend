@@ -5,6 +5,8 @@ const settingSchema = mongoose.Schema({
     shopName: { type: String },
     shopOwner: { type: String },
     language: { type: String },
+    currency: { type: String },
+    country: { type: String },
     updates: { type: Boolean }
 });
 
