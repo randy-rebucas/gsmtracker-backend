@@ -71,10 +71,14 @@ exports.getOne = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-        await Technician.deleteOne({ _id: req.params.id }).exec();
-
-        res.status(200).json({ message: 'Deletion successfull!' });
-
+        technicianIds = req.query.technicianIds.split(',');
+        let technician = await Technician.deleteMany({ _id: { $in: technicianIds } });
+        if (!technician) {
+            throw new Error('Error in deleting technician!');
+        }
+        res.status(200).json({
+            message: technician.n + ' item deleted successfull!'
+        });
     } catch (error) {
         res.status(500).json({
             message: error.message

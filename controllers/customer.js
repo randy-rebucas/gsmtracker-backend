@@ -40,7 +40,6 @@ exports.getAll = async(req, res, next) => {
             .where('ownerId', ownerId)
             .sort({ '_id': 'asc' })
             .exec();
-
         res.status(200).json({
             message: 'Customer fetched successfully!',
             customers: data,
@@ -70,9 +69,14 @@ exports.getOne = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-        await Customer.deleteOne({ _id: req.params.id }).exec();
-
-        res.status(200).json({ message: 'Deletion successfull!' });
+        customerIds = req.query.customerIds.split(',');
+        let customer = await Customer.deleteMany({ _id: { $in: customerIds } });
+        if (!customer) {
+            throw new Error('Error in deleting customer!');
+        }
+        res.status(200).json({
+            message: customer.n + ' item deleted successfull!'
+        });
 
     } catch (error) {
         res.status(500).json({

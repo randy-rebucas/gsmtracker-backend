@@ -16,6 +16,6 @@ router.post('', ctrlr.create);
 
 router.put('/:id', authorization, ctrlr.update);
 
-router.delete('/:id', authorization, ctrlr.delete);
+router.delete('', authorization, ctrlr.delete);
 
 module.exports = router;
