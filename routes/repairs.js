@@ -14,7 +14,7 @@ router.post('', ctrlr.create);
 
 router.put('/:id', authorization, ctrlr.update);
 
-router.delete('/:ids', authorization, ctrlr.delete);
+router.delete('', authorization, ctrlr.delete);
 
 router.get('/checkOwnerExist/:ownerId/:repairId', ctrlr.checkOwner);
 

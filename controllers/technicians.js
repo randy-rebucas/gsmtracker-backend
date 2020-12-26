@@ -84,7 +84,9 @@ exports.delete = async(req, res, next) => {
 
 exports.lookup = async(req, res, next) => {
     try {
-        let technicians = await Technician.find().populate('userId');
+        let technicians = await Technician.find()
+            .where('ownerId', req.params.id)
+            .populate('userId');
 
         const result = [];
         technicians.forEach(element => {

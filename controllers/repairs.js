@@ -159,12 +159,8 @@ exports.setLabel = async(req, res, next) => {
 
 exports.delete = async(req, res, next) => {
     try {
-        idArray = req.params.ids;
-        ids = idArray.split(',');
-        /**
-         * soft delete pepair collection
-         */
-        let repair = await Repair.updateMany({ _id: { $in: ids } }, { $set: { 'deleted': 1 } }, { 'multi': true });
+        repairIds = req.query.repairIds.split(',');
+        let repair = await Repair.deleteMany({ _id: { $in: repairIds } });
         if (!repair) {
             throw new Error('Error in deleting repair!');
         }

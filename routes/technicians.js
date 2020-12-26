@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get('', ctrlr.getAll);
 
-router.get('/lookup', ctrlr.lookup);
+router.get('/lookup/:id', ctrlr.lookup);
 
 router.get('/:id', ctrlr.getOne);
 
