@@ -6,6 +6,7 @@ exports.getAll = async(req, res, next) => {
         const currentPage = +req.query.page;
         const userId = req.query.userId;
         const labelId = req.query.labelId;
+
         const query = Repair.find()
             .populate({
                 path: 'customerId',
@@ -33,11 +34,11 @@ exports.getAll = async(req, res, next) => {
             query.skip(pageSize * (currentPage - 1)).limit(pageSize);
         }
         const repairs = await query.where('deleted', 0).sort({ 'createdAt': 'asc' }).exec();
-
+        const repairCount = await Repair.countDocuments().where('deleted', 0);
         res.status(200).json({
             message: 'Repair fetched successfully!',
             repairs: repairs,
-            counts: repairs.length
+            counts: repairCount
         });
 
     } catch (error) {
